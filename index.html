@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#174d29">
+<title>BSHUSHU FLIGHT CLUB — Путешествия</title>
+</head>
+<body>
+<div id="bshFlightMount">
+  <div class="bf-game">
+    <canvas id="bf-canvas" aria-label="Игра BSHUSHU Flight Club"></canvas>
+    <div class="bf-top">
+      <div><b>BSHUSHU</b><small>FLIGHT CLUB · 02.10 R22</small></div>
+      <div class="bf-score"><small>ДИСТАНЦИЯ</small><strong id="bf-km">0</strong> км<small id="bf-miles">✦ 0 миль</small><small id="bf-combo">Вкусная серия: 0/3</small><small id="bf-lives">♥ ♥ ♥</small></div>
+    </div>
+    <button id="bf-sound" class="bf-sound" type="button" aria-label="Включить звук" aria-pressed="false">Звук: выкл.</button>
+    <div id="bf-safe" class="bf-safe hidden"><small>БЕЗОПАСНЫЙ ПОЛЁТ</small><b id="bf-countdown">5</b></div>
+    <div id="bf-wine" class="bf-wine hidden"></div>
+    <div id="bf-tutorial" class="bf-tutorial hidden">
+      <b id="bf-tutorial-title">Удерживай — вверх</b><p id="bf-tutorial-text">Нажми на игровое поле и держи палец.</p>
+      <button id="bf-tutorial-skip" type="button">Пропустить обучение →</button>
+    </div>
+    <div class="bf-toast" id="bf-toast"></div>
+    <div class="bf-story" id="bf-story">
+      <b id="bf-story-country"></b>
+      <span id="bf-story-text"></span>
+    </div>
+    <div class="bf-route">
+      <div class="bf-row"><b>МАРШРУТ ОТПУСКА</b><b id="bf-place">ГРЕЦИЯ</b></div>
+      <div class="bf-track"><div id="bf-fill"></div></div>
+      <div class="bf-row bf-stops"><span>Греция</span><span>Франция</span><span>Испания</span><span>Турция</span></div>
+    </div>
+    <div class="bf-overlay" id="bf-overlay">
+      <div class="bf-card">
+        <div class="bf-ticket-head">
+          <div class="bf-airline"><b>БШУШУФЛОТ</b><span>BSHUSHU FLIGHT CLUB</span></div>
+          <div class="bf-ticket-type">ПОСАДОЧНЫЙ ТАЛОН<br><span>BOARDING PASS</span></div>
+        </div>
+        <small id="bf-label">ПОСАДКА ОТКРЫТА</small>
+        <div class="bf-icon">✈</div>
+        <h2 id="bf-title">Средиземноморский<br>перелёт</h2>
+        <p id="bf-description">Три жизни. Четыре страны. Собирай штампы и угощения. В зачётном полёте соревнуйся за три призовых места недели.</p>
+        <div class="bf-result hidden" id="bf-result" aria-live="polite"></div>
+        <p class="bf-hint">Подарки недели: 1-е место — пицца · 2-е — десерт · 3-е — напиток.</p>
+        <div class="bf-passport" id="bf-passport"></div>
+        <p class="bf-hint" id="bf-deadline"></p>
+        <button id="bf-share" class="bf-secondary hidden" type="button">СОХРАНИТЬ ИЛИ ОТПРАВИТЬ ТАЛОН</button>
+        <button id="bf-start" type="button">ТРЕНИРОВОЧНЫЙ ПОЛЁТ →</button>
+        <button id="bf-official" class="bf-secondary" type="button" disabled>ЗАЧЁТНЫЙ ПОЛЁТ</button>
+        <button id="bf-board-open" class="bf-link" type="button">Рейтинг недели · 3 призовых места</button>
+        <p class="bf-status" id="bf-status" aria-live="polite"></p>
+        <button id="bf-retry" class="bf-secondary hidden" type="button">Повторить отправку результата</button>
+        <p class="bf-hint">Удерживай палец, чтобы подняться. Отпусти, чтобы снизиться.</p>
+      </div>
+    </div>
+    <div class="bf-panel hidden" id="bf-guide" role="dialog" aria-modal="true" aria-labelledby="bf-guide-title">
+      <div class="bf-card">
+        <small>ИНСТРУКТАЖ ПЕРЕД ВЗЛЁТОМ</small>
+        <h2 id="bf-guide-title">Как играть</h2>
+        <div class="bf-guide-rules">
+          <p><b>✈ Управляй высотой</b><br>Удерживай палец на игровом поле — вверх. Отпусти — вниз. На компьютере удерживай мышь, пробел или стрелку ↑.</p>
+          <p><b>♥ Береги три жизни</b><br>Уходи от чаек и молний под тучками, не падай вниз. Пунктир под тучкой предупреждает об ударе. В начале каждого полёта — пять безопасных секунд.</p>
+          <p><b>✦ Собирай угощения</b><br>Греция — оливки, Франция — френч-бургер, Испания — паэлья, Турция — кебаб. Каждое угощение даёт 10 миль. Три без получения урона — ещё 20 миль. Близкий пролёт мимо чайки без столкновения — 5 миль.</p>
+          <p><b>🍾 Осторожнее с вином</b><br>Бутылка ускоряет полёт на пять секунд, но самолёт начинает вилять и хуже слушается. Вино не прерывает серию угощений.</p>
+          <p><b>🏆 Лети за подарками</b><br>Тренировки без ограничений. Зачёт — одна попытка на телефон в неделю, до трёх минут. В рейтинге важнее дистанция, затем мили. Подарки: 1-е место — пицца, 2-е — десерт, 3-е — напиток.</p>
+        </div>
+        <p class="bf-hint" id="bf-guide-note"></p>
+        <button id="bf-guide-go" type="button">ПОНЯТНО, ВЗЛЕТАЕМ →</button>
+        <button id="bf-guide-back" class="bf-link" type="button">Назад к заставке</button>
+      </div>
+    </div>
+    <div class="bf-panel hidden" id="bf-pause">
+      <div class="bf-card"><small>РЕЙС НА ПАУЗЕ</small><h2>Продолжим полёт?</h2><p>Самолёт ждёт тебя. Нажми кнопку, когда будешь готов.</p><button id="bf-resume" type="button">ПРОДОЛЖИТЬ →</button></div>
+    </div>
+    <div class="bf-panel hidden" id="bf-register">
+      <div class="bf-reg-brand" aria-hidden="true">
+        <b>BSHUSHU</b><span>FLIGHT CLUB · 01</span>
+      </div>
+      <div class="bf-card">
+        <small>НЕДЕЛЬНЫЙ ЗАЧЁТ</small><h2>Посадочный<br>талон</h2>
+        <p>Одна зачётная попытка на телефон за неделю. Тренироваться можно сколько угодно. Попытка считается начатой после нажатия «Взлететь».</p>
+        <label class="bf-field">Имя или ник<input id="bf-name" maxlength="24" autocomplete="name" placeholder="Как тебя зовут?"></label>
+        <label class="bf-field">Телефон<input id="bf-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 999 000-00-00"></label>
+        <p class="bf-hint">Телефон видит только ресторан, чтобы связаться с победителем.</p>
+        <label class="bf-consent"><input id="bf-consent" type="checkbox"><span>Согласен(на) на обработку имени и телефона для участия в игре и связи с победителями.</span></label>
+        <p class="bf-error" id="bf-form-error" aria-live="polite"></p>
+        <button id="bf-go" type="button">ВЗЛЕТЕТЬ →</button>
+        <div class="bf-reg-stub" aria-hidden="true">
+          <div><small>РЕЙС / FLIGHT</small><b>BS 0622</b></div>
+          <div><small>ОТКУДА / FROM</small><b>ИСПАНИЯ</b><span>MAD</span></div>
+          <div class="bf-reg-plane">✈</div>
+          <div><small>КУДА / TO</small><b>ТУРЦИЯ</b><span>IST</span></div>
+        </div>
+        <div class="bf-reg-barcode" aria-hidden="true"></div>
+        <button class="bf-link" id="bf-register-back" type="button">Назад</button>
+      </div>
+    </div>
+    <div class="bf-panel hidden" id="bf-board-panel">
+      <div class="bf-card">
+        <small>BSHUSHU FLIGHT CLUB</small><h2>Рейтинг недели</h2>
+        <p class="bf-hint" id="bf-week"></p>
+        <div class="bf-podium" id="bf-podium"></div>
+        <div id="bf-board-list"></div>
+        <div id="bf-winners"></div>
+        <p class="bf-hint">Выше в рейтинге тот, кто пролетел дальше. При равной дистанции — больше отпускных миль, затем более ранний результат.</p>
+        <button id="bf-board-close" type="button">К ИГРЕ →</button>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+#bshFlightMount{--ink:#143c49;--cream:#f4ede0;--coral:#df7054;box-sizing:border-box;width:100%;padding:10px;display:flex;justify-content:center;align-items:center;background:var(--cream);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+#bshFlightMount *{box-sizing:border-box}
+#bshFlightMount .bf-game{position:relative;overflow:hidden;width:min(100%,430px);height:min(850px,calc(100dvh - 20px));min-height:540px;border:2px solid var(--ink);border-radius:22px;background:#9ed7ef;box-shadow:0 14px 42px #143c4926;touch-action:none;user-select:none}
+#bshFlightMount canvas{display:block;width:100%;height:100%;touch-action:none}
+#bshFlightMount .bf-top{position:absolute;z-index:2;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:14px 18px;pointer-events:none;text-shadow:0 1px #fff9}
+#bshFlightMount .bf-top b{font-size:15px;letter-spacing:.22em}
+#bshFlightMount .bf-top small{display:block;font-size:10px;font-weight:bold;letter-spacing:.15em;margin-top:5px}
+#bshFlightMount .bf-score{text-align:right;font-size:19px;font-weight:bold}
+#bshFlightMount .bf-score strong{font-size:25px}
+#bshFlightMount .bf-score small:first-child{margin:0}
+#bshFlightMount .bf-toast{position:absolute;z-index:3;top:91px;left:50%;transform:translateX(-50%);white-space:nowrap;max-width:90%;padding:8px 14px;border:1px solid #143c4988;border-radius:30px;background:#fff9e9ee;font-size:12px;font-weight:bold;opacity:0;transition:opacity .25s;pointer-events:none}
+#bshFlightMount .bf-toast.show{opacity:1}
+#bshFlightMount .bf-story{position:absolute;z-index:3;top:91px;left:16px;right:16px;padding:11px 13px;background:#fff9e9a6;border:1px solid #143c4977;border-radius:13px;box-shadow:0 5px 18px #143c4920;pointer-events:none;opacity:0;transform:translateY(-7px);transition:opacity .35s,transform .35s}
+#bshFlightMount .bf-story.show{opacity:1;transform:translateY(0)}
+#bshFlightMount .bf-story b{display:block;margin-bottom:4px;font-size:10px;letter-spacing:.14em;color:#bd573d}
+#bshFlightMount .bf-story span{display:block;font-size:12px;line-height:1.35;font-weight:600}
+#bshFlightMount .bf-toast{top:210px}
+#bshFlightMount .bf-route{position:absolute;z-index:2;bottom:17px;left:17px;right:17px;padding:9px 12px;background:#fff9e9de;border:1px solid #143c4988;border-radius:14px;pointer-events:none}
+#bshFlightMount .bf-row{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.04em}
+#bshFlightMount .bf-track{height:5px;margin-top:8px;border-radius:5px;background:#b8c6bf}
+#bshFlightMount #bf-fill{height:100%;width:0;border-radius:5px;background:var(--coral)}
+#bshFlightMount .bf-stops{margin-top:6px;font-weight:bold;letter-spacing:0}
+#bshFlightMount .bf-stops .active{color:#bd573d}
+#bshFlightMount .bf-overlay{position:absolute;z-index:4;inset:0;display:flex;justify-content:center;align-items:center;padding:24px;background:linear-gradient(#f5ede0e8,#f5ede0c9);text-align:center}
+#bshFlightMount .bf-overlay.hidden{display:none}
+#bshFlightMount .bf-card{width:100%;padding:26px 20px;background:#fff9eef0;border:1px solid var(--ink);border-radius:20px;box-shadow:7px 7px #143c4928}
+#bshFlightMount .bf-card>small{font-size:11px;letter-spacing:.2em;font-weight:bold;color:#bd5a45}
+#bshFlightMount .bf-icon{font-size:32px;margin:13px 0}
+#bshFlightMount h2{font:normal clamp(34px,9vw,49px)/1 Georgia,serif;margin:13px 0 17px;color:var(--ink)}
+#bshFlightMount p{font-size:14px;line-height:1.5;margin:0 0 17px}
+#bshFlightMount button{width:100%;padding:15px;border:0;border-radius:40px;background:var(--coral);color:white;font-size:15px;font-weight:bold;letter-spacing:.08em;cursor:pointer;box-shadow:0 5px #a84f39}
+#bshFlightMount button:active{transform:translateY(3px);box-shadow:0 2px #a84f39}
+#bshFlightMount .bf-hint{font-size:11px;margin:18px 0 0;color:#426270}
+@media(max-width:600px){
+  #bshFlightMount{padding:0}
+  #bshFlightMount .bf-game{width:min(100%,430px,calc(55.714dvh - 8px));height:auto;aspect-ratio:390/700;min-height:0;border-radius:16px;box-shadow:none}
+  #bshFlightMount .bf-top{padding:11px 13px}
+  #bshFlightMount .bf-top b{font-size:13px}
+  #bshFlightMount .bf-top small{font-size:9px}
+  #bshFlightMount .bf-score,#bshFlightMount .bf-score strong{font-size:19px}
+  #bshFlightMount .bf-route{bottom:11px;left:11px;right:11px;padding:8px 10px}
+  #bshFlightMount .bf-row{font-size:9px}
+  #bshFlightMount .bf-story{top:70px;left:11px;right:11px;padding:8px 10px}
+  #bshFlightMount .bf-story b{font-size:9px}
+  #bshFlightMount .bf-story span{font-size:10px;line-height:1.3}
+  #bshFlightMount .bf-toast{top:178px;font-size:10px;overflow:hidden;text-overflow:ellipsis}
+  #bshFlightMount .bf-overlay{padding:12px}
+  #bshFlightMount .bf-card{padding:16px 13px}
+  #bshFlightMount h2{font-size:clamp(24px,7vw,35px);overflow-wrap:anywhere}
+  #bshFlightMount p{font-size:12px;margin-bottom:11px}
+  #bshFlightMount .bf-hint{font-size:10px;margin:11px 0 0}
+  #bshFlightMount button{font-size:13px;padding:12px}
+}
+
+#bshFlightMount .hidden{display:none!important}
+#bshFlightMount .bf-card{max-height:100%;overflow-y:auto;overscroll-behavior:contain}
+#bshFlightMount .bf-overlay{overflow:hidden}
+#bshFlightMount .bf-panel{position:absolute;z-index:6;inset:0;display:flex;align-items:center;justify-content:center;padding:14px;background:#f4ede0ee;text-align:center;touch-action:pan-y}
+#bshFlightMount .bf-panel h2{font-size:32px;margin:12px 0}
+#bshFlightMount button.bf-secondary{background:transparent;color:var(--ink);border:1px solid var(--ink);box-shadow:none;margin-top:10px;padding:11px;letter-spacing:.04em}
+#bshFlightMount button.bf-link{padding:8px;margin-top:9px;background:none;box-shadow:none;color:var(--ink);font-size:11px;letter-spacing:0;text-decoration:underline}
+#bshFlightMount button:disabled{opacity:.5;cursor:default}
+#bshFlightMount .bf-passport{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:12px 0}
+#bshFlightMount .bf-stamp{border:1px dashed #143c4955;border-radius:8px;padding:8px 2px;font-size:9px;opacity:.45}
+#bshFlightMount .bf-stamp.earned{opacity:1;border:2px solid #bd573d;color:#bd573d;transform:rotate(-3deg);background:#fffaf088}
+#bshFlightMount .bf-stops .visited::before{content:'✓ ';color:#bd573d}
+#bshFlightMount #bf-lives{color:#b94734;font-size:14px;letter-spacing:3px}
+#bshFlightMount .bf-status{font-size:11px;line-height:1.35;margin:9px 0 0}
+#bshFlightMount .bf-field{display:block;text-align:left;font-size:11px;margin:12px 0}
+#bshFlightMount .bf-field input{display:block;width:100%;padding:12px;margin-top:5px;border:1px solid #143c4977;border-radius:10px;background:#fffaf0;font-size:16px;color:var(--ink)}
+#bshFlightMount .bf-consent{display:flex;align-items:flex-start;gap:8px;margin:13px 0;font-size:10px;line-height:1.4;text-align:left}
+#bshFlightMount .bf-consent input{flex-shrink:0;margin:2px 0;width:16px;height:16px}
+#bshFlightMount .bf-error{color:#a63b2a;font-size:12px;min-height:16px;margin:8px 0}
+#bshFlightMount .bf-podium{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:16px 0}
+#bshFlightMount .bf-pod{border:1px solid #143c4966;border-radius:12px;padding:10px 4px;font-size:11px;overflow-wrap:anywhere}
+#bshFlightMount .bf-pod b,#bshFlightMount .bf-pod small{display:block;margin:5px 0}
+#bshFlightMount .bf-board-row{display:grid;grid-template-columns:25px 1fr auto;gap:5px;border-bottom:1px solid #143c4933;padding:9px 0;font-size:11px;text-align:left}
+#bshFlightMount .bf-board-row span:nth-child(2){overflow-wrap:anywhere}
+#bshFlightMount #bf-winners{font-size:11px;line-height:1.5;margin-top:16px}
+
+/* =====================================================
+   BSHUSHU BUSINESS / J — START SCREEN
+   Визуальная замена стартового экрана. Логика игры не изменена.
+===================================================== */
+
+#bshFlightMount .bf-overlay{
+  padding:18px;
+  background:
+    linear-gradient(rgba(23,77,41,.18),rgba(23,77,41,.18)),
+    url("https://static.tildacdn.com/tild3132-3930-4730-b334-633766353530/EE257B52-EF30-4C2D-B.png")
+    center/cover no-repeat;
+  text-align:left;
+}
+
+#bshFlightMount .bf-overlay::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg,rgba(14,57,31,.10),rgba(14,57,31,.02));
+}
+
+#bshFlightMount .bf-overlay .bf-card{
+  position:relative;
+  z-index:1;
+  width:min(100%,370px);
+  padding:22px 22px 20px;
+  overflow:visible;
+  color:#173e47;
+  background:#fff7e8;
+  border:0;
+  border-radius:7px;
+  box-shadow:0 18px 50px rgba(0,0,0,.30);
+}
+
+#bshFlightMount .bf-overlay .bf-card::before,
+#bshFlightMount .bf-overlay .bf-card::after{
+  content:"";
+  position:absolute;
+  top:106px;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#174d29;
+}
+#bshFlightMount .bf-overlay .bf-card::before{left:-9px}
+#bshFlightMount .bf-overlay .bf-card::after{right:-9px}
+
+#bshFlightMount .bf-overlay .bf-card>small{
+  display:block;
+  padding-right:95px;
+  color:#174d29;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.18em;
+}
+
+#bshFlightMount .bf-overlay .bf-icon{
+  position:absolute;
+  top:16px;
+  right:20px;
+  margin:0;
+  color:#1d5f9b;
+  font-size:21px;
+  letter-spacing:5px;
+}
+
+#bshFlightMount .bf-overlay h2{
+  position:relative;
+  margin:12px 0 12px;
+  padding:17px 0 16px;
+  color:#174d29;
+  border-top:1px solid rgba(23,77,41,.35);
+  border-bottom:1px dashed rgba(23,77,41,.55);
+  font:800 31px/.94 Arial,Helvetica,sans-serif;
+  letter-spacing:-.04em;
+  text-transform:uppercase;
+}
+
+#bshFlightMount .bf-overlay h2::after{
+  content:"БИЗНЕС  ·  J";
+  display:block;
+  margin-top:12px;
+  color:#1d5f9b;
+  font:800 11px/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.18em;
+}
+
+#bshFlightMount .bf-overlay #bf-description{
+  margin:0 0 12px;
+  color:#173e47;
+  font-size:12px;
+  line-height:1.42;
+}
+
+#bshFlightMount .bf-overlay .bf-passport{
+  margin:10px 0 14px;
+  padding:10px 0;
+  border-top:1px solid rgba(23,77,41,.28);
+  border-bottom:1px solid rgba(23,77,41,.28);
+}
+
+#bshFlightMount .bf-overlay .bf-stamp{
+  padding:7px 2px;
+  border-radius:2px;
+  background:transparent;
+}
+
+#bshFlightMount .bf-overlay #bf-start{
+  background:#df7054;
+  box-shadow:0 4px #a84f39;
+}
+
+#bshFlightMount .bf-overlay #bf-official{
+  color:#174d29;
+  background:#fff7e8;
+  border-color:#174d29;
+}
+
+#bshFlightMount .bf-overlay #bf-board-open{
+  color:#174d29;
+}
+
+#bshFlightMount .bf-overlay .bf-status{
+  color:#174d29;
+}
+
+#bshFlightMount .bf-overlay .bf-hint{
+  position:relative;
+  margin-top:12px;
+  padding:12px 0 19px;
+  border-top:1px dashed rgba(23,77,41,.48);
+  color:#426270;
+  font-size:10px;
+}
+
+#bshFlightMount .bf-overlay .bf-hint::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:11px;
+  opacity:.78;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #174d29 0 2px,
+      transparent 2px 4px,
+      #174d29 4px 5px,
+      transparent 5px 8px,
+      #174d29 8px 12px,
+      transparent 12px 14px
+    );
+}
+
+@media(max-width:600px){
+  #bshFlightMount .bf-overlay{
+    padding:13px;
+    background-position:center;
+  }
+  #bshFlightMount .bf-overlay .bf-card{
+    width:100%;
+    padding:17px 16px 15px;
+    border-radius:5px;
+  }
+  #bshFlightMount .bf-overlay .bf-card::before,
+  #bshFlightMount .bf-overlay .bf-card::after{
+    top:92px;
+    width:15px;
+    height:15px;
+  }
+  #bshFlightMount .bf-overlay .bf-card::before{left:-7px}
+  #bshFlightMount .bf-overlay .bf-card::after{right:-7px}
+  #bshFlightMount .bf-overlay h2{
+    margin:9px 0 9px;
+    padding:13px 0;
+    font-size:25px;
+  }
+  #bshFlightMount .bf-overlay h2::after{
+    margin-top:9px;
+    font-size:10px;
+  }
+  #bshFlightMount .bf-overlay #bf-description{
+    font-size:10.5px;
+    margin-bottom:8px;
+  }
+  #bshFlightMount .bf-overlay .bf-passport{
+    margin:7px 0 10px;
+    padding:7px 0;
+  }
+  #bshFlightMount .bf-overlay .bf-hint{
+    margin-top:8px;
+    padding-top:8px;
+  }
+}
+
+
+
+/* ==========================================================
+   FINAL TICKET — БШУШУФЛОТ / translucent green boarding pass
+   Background: original BSHUSHU route map.
+========================================================== */
+#bshFlightMount .bf-overlay{
+  padding:16px;
+  background:
+    linear-gradient(rgba(8,55,25,.05),rgba(8,55,25,.05)),
+    url("https://static.tildacdn.com/tild3132-3930-4730-b334-633766353530/EE257B52-EF30-4C2D-B.png")
+    center/cover no-repeat,
+    #0f5428;
+}
+
+#bshFlightMount .bf-overlay::before{
+  background:linear-gradient(180deg,rgba(0,35,15,.05),rgba(0,35,15,.10));
+}
+
+#bshFlightMount .bf-overlay .bf-card{
+  width:min(100%,382px);
+  padding:18px 20px 18px;
+  color:#fff8e9;
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,248,233,.70);
+  border-radius:16px;
+  box-shadow:0 18px 48px rgba(0,0,0,.24),inset 0 0 28px rgba(255,255,255,.055);
+  -webkit-backdrop-filter:blur(7px);
+  backdrop-filter:blur(7px);
+}
+
+#bshFlightMount .bf-overlay .bf-card::before,
+#bshFlightMount .bf-overlay .bf-card::after{
+  top:94px;
+  background:#12562c;
+  box-shadow:0 0 0 1px rgba(255,248,233,.55);
+}
+
+#bshFlightMount .bf-ticket-head{
+  display:grid;
+  grid-template-columns:1fr 1.1fr;
+  gap:14px;
+  align-items:start;
+  padding:0 0 12px;
+  margin-bottom:10px;
+  border-bottom:1px dashed rgba(255,248,233,.72);
+}
+
+#bshFlightMount .bf-airline{
+  padding-right:12px;
+  border-right:1px solid rgba(255,248,233,.55);
+}
+#bshFlightMount .bf-airline b{
+  display:block;
+  color:#fff8e9;
+  font-size:16px;
+  line-height:1;
+  letter-spacing:.16em;
+}
+#bshFlightMount .bf-airline span,
+#bshFlightMount .bf-ticket-type span{
+  display:block;
+  margin-top:6px;
+  color:rgba(255,248,233,.78);
+  font-size:8px;
+  letter-spacing:.22em;
+}
+#bshFlightMount .bf-ticket-type{
+  color:#fff8e9;
+  font-size:9px;
+  font-weight:700;
+  line-height:1.35;
+  letter-spacing:.18em;
+}
+
+#bshFlightMount .bf-overlay .bf-card>small{
+  padding-right:50px;
+  color:#fff8e9;
+  opacity:.92;
+  font-size:9px;
+}
+
+#bshFlightMount .bf-overlay .bf-icon{
+  top:73px;
+  right:20px;
+  color:#fff8e9;
+  font-size:20px;
+}
+
+#bshFlightMount .bf-overlay h2{
+  margin:9px 0 10px;
+  padding:13px 0 12px;
+  color:#fff8e9;
+  border-top:1px solid rgba(255,248,233,.42);
+  border-bottom:1px dashed rgba(255,248,233,.70);
+  font-size:28px;
+}
+#bshFlightMount .bf-overlay h2::after{
+  content:"БИЗНЕС  ·  J";
+  color:#ff744d;
+  font-size:11px;
+}
+
+#bshFlightMount .bf-overlay #bf-description{
+  color:#fff8e9;
+  font-size:11px;
+}
+
+#bshFlightMount .bf-overlay .bf-passport{
+  border-color:rgba(255,248,233,.38);
+}
+#bshFlightMount .bf-overlay .bf-stamp{
+  color:rgba(255,248,233,.72);
+  border-color:rgba(255,248,233,.42);
+}
+#bshFlightMount .bf-overlay .bf-stamp.earned{
+  color:#ff805d;
+  border-color:#ff805d;
+  background:rgba(255,255,255,.06);
+}
+
+#bshFlightMount .bf-overlay #bf-start{
+  background:#e85f39;
+  color:#fff;
+  border:0;
+  box-shadow:0 4px rgba(130,42,22,.72);
+}
+#bshFlightMount .bf-overlay #bf-official{
+  color:#fff8e9;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,248,233,.86);
+}
+#bshFlightMount .bf-overlay #bf-board-open{
+  color:#fff8e9;
+}
+#bshFlightMount .bf-overlay .bf-status{
+  color:#fff8e9;
+}
+#bshFlightMount .bf-overlay .bf-hint{
+  color:rgba(255,248,233,.82);
+  border-color:rgba(255,248,233,.55);
+}
+#bshFlightMount .bf-overlay .bf-hint::after{
+  opacity:.92;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #fff8e9 0 2px,
+      transparent 2px 4px,
+      #fff8e9 4px 5px,
+      transparent 5px 8px,
+      #fff8e9 8px 12px,
+      transparent 12px 14px
+    );
+}
+
+@media(max-width:600px){
+  #bshFlightMount .bf-overlay{padding:12px}
+  #bshFlightMount .bf-overlay .bf-card{
+    padding:15px 15px 14px;
+    border-radius:14px;
+  }
+  #bshFlightMount .bf-ticket-head{
+    gap:10px;
+    padding-bottom:9px;
+    margin-bottom:7px;
+  }
+  #bshFlightMount .bf-airline b{font-size:13px}
+  #bshFlightMount .bf-airline span,
+  #bshFlightMount .bf-ticket-type span{font-size:7px}
+  #bshFlightMount .bf-ticket-type{font-size:8px}
+  #bshFlightMount .bf-overlay .bf-icon{top:62px;right:16px}
+  #bshFlightMount .bf-overlay h2{font-size:23px;padding:10px 0}
+}
+
+
+
+/* ==========================================================
+   REGISTRATION — green BSHUSHU route map + boarding pass stub
+========================================================== */
+#bshFlightMount #bf-register{
+  position:absolute;
+  z-index:6;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+  overflow:hidden;
+  background:
+    linear-gradient(rgba(8,55,25,.05),rgba(8,55,25,.05)),
+    url("https://static.tildacdn.com/tild3132-3930-4730-b334-633766353530/EE257B52-EF30-4C2D-B.png")
+    center/cover no-repeat,
+    #0f5428;
+  text-align:center;
+}
+
+#bshFlightMount #bf-register::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,35,15,.04),rgba(0,35,15,.10));
+}
+
+#bshFlightMount #bf-register .bf-reg-brand{
+  position:absolute;
+  z-index:1;
+  top:18px;
+  left:20px;
+  color:#fff8e9;
+  text-align:left;
+  pointer-events:none;
+}
+#bshFlightMount #bf-register .bf-reg-brand b{
+  display:block;
+  font-size:15px;
+  letter-spacing:.22em;
+}
+#bshFlightMount #bf-register .bf-reg-brand span{
+  display:block;
+  margin-top:5px;
+  font-size:8px;
+  letter-spacing:.22em;
+}
+
+#bshFlightMount #bf-register .bf-card{
+  position:relative;
+  z-index:2;
+  width:min(100%,382px);
+  max-height:calc(100% - 38px);
+  padding:20px 18px 15px;
+  overflow-y:auto;
+  color:#143c49;
+  background:rgba(255,249,238,.88);
+  border:1px solid rgba(255,248,233,.88);
+  border-radius:15px;
+  box-shadow:0 18px 48px rgba(0,0,0,.25),inset 0 0 28px rgba(255,255,255,.22);
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+}
+
+#bshFlightMount #bf-register .bf-card::before,
+#bshFlightMount #bf-register .bf-card::after{
+  content:"";
+  position:absolute;
+  top:98px;
+  width:17px;
+  height:17px;
+  border-radius:50%;
+  background:#155a30;
+}
+#bshFlightMount #bf-register .bf-card::before{left:-9px}
+#bshFlightMount #bf-register .bf-card::after{right:-9px}
+
+#bshFlightMount #bf-register .bf-card>small{
+  color:#d65d42;
+  font-size:9px;
+  letter-spacing:.2em;
+}
+
+#bshFlightMount #bf-register h2{
+  margin:9px 0 12px;
+  font-size:34px;
+  line-height:.92;
+}
+
+#bshFlightMount #bf-register p{
+  margin-bottom:11px;
+  font-size:11px;
+  line-height:1.42;
+}
+
+#bshFlightMount #bf-register .bf-field{
+  margin:9px 0;
+  font-size:10px;
+}
+#bshFlightMount #bf-register .bf-field input{
+  padding:10px;
+  border-radius:7px;
+  background:rgba(255,250,240,.78);
+  font-size:14px;
+}
+
+#bshFlightMount #bf-register .bf-consent{
+  margin:10px 0;
+  font-size:9px;
+}
+
+#bshFlightMount #bf-register #bf-go{
+  padding:13px;
+  background:#e66749;
+}
+
+#bshFlightMount #bf-register .bf-reg-stub{
+  display:grid;
+  grid-template-columns:.9fr 1.15fr 30px 1fr;
+  gap:7px;
+  align-items:center;
+  margin:14px -2px 0;
+  padding:12px 2px 8px;
+  border-top:1px dashed rgba(20,60,73,.58);
+  text-align:left;
+}
+#bshFlightMount #bf-register .bf-reg-stub small{
+  display:block;
+  margin-bottom:4px;
+  color:#426270;
+  font-size:7px;
+  letter-spacing:.08em;
+}
+#bshFlightMount #bf-register .bf-reg-stub b{
+  display:block;
+  color:#143c49;
+  font-size:12px;
+  line-height:1.1;
+}
+#bshFlightMount #bf-register .bf-reg-stub span{
+  display:block;
+  margin-top:3px;
+  color:#426270;
+  font-size:8px;
+}
+#bshFlightMount #bf-register .bf-reg-plane{
+  color:#143c49;
+  font-size:20px;
+  text-align:center;
+}
+
+#bshFlightMount #bf-register .bf-reg-barcode{
+  height:17px;
+  margin:4px 0 3px;
+  opacity:.86;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #143c49 0 2px,
+      transparent 2px 4px,
+      #143c49 4px 5px,
+      transparent 5px 8px,
+      #143c49 8px 12px,
+      transparent 12px 14px
+    );
+}
+
+#bshFlightMount #bf-register #bf-register-back{
+  margin-top:5px;
+  color:#143c49;
+}
+
+/* No game HUD stats on the registration screen */
+#bshFlightMount #bf-register ~ * .bf-top{visibility:hidden}
+
+@media(max-width:600px){
+  #bshFlightMount #bf-register{padding:10px}
+  #bshFlightMount #bf-register .bf-reg-brand{
+    top:10px;
+    left:14px;
+  }
+  #bshFlightMount #bf-register .bf-card{
+    max-height:calc(100% - 24px);
+    padding:16px 14px 12px;
+  }
+  #bshFlightMount #bf-register h2{font-size:29px}
+  #bshFlightMount #bf-register .bf-reg-stub{
+    grid-template-columns:.85fr 1.1fr 25px 1fr;
+    gap:5px;
+    padding-top:9px;
+  }
+}
+
+
+
+/* ==========================================================
+   FULLSCREEN / NO-SCROLL MODE
+   Keeps the T123 game fixed in the browser viewport.
+========================================================== */
+html.bshushu-flight-lock,
+body.bshushu-flight-lock{
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  overscroll-behavior:none !important;
+  background:#f4ede0 !important;
+}
+
+body.bshushu-flight-lock{
+  position:fixed !important;
+  inset:0 !important;
+  touch-action:none !important;
+  -webkit-overflow-scrolling:auto !important;
+}
+
+body.bshushu-flight-lock #allrecords{
+  position:fixed !important;
+  inset:0 !important;
+  width:100vw !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+body.bshushu-flight-lock #bshFlightMount{
+  position:fixed !important;
+  z-index:99999 !important;
+  inset:0 !important;
+  width:100vw !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  overscroll-behavior:none !important;
+  touch-action:none !important;
+  background:#f4ede0 !important;
+}
+
+body.bshushu-flight-lock #bshFlightMount .bf-game{
+  width:min(100vw,430px,calc(100dvh * 390 / 700)) !important;
+  height:min(100dvh,calc(100vw * 700 / 390)) !important;
+  max-width:430px !important;
+  max-height:100dvh !important;
+  min-height:0 !important;
+  margin:auto !important;
+  flex:0 0 auto !important;
+  aspect-ratio:390/700 !important;
+  border-radius:16px !important;
+  touch-action:none !important;
+  overscroll-behavior:none !important;
+}
+
+@supports(height:100svh){
+  body.bshushu-flight-lock #allrecords,
+  body.bshushu-flight-lock #bshFlightMount{
+    height:100svh !important;
+    min-height:100svh !important;
+  }
+  body.bshushu-flight-lock #bshFlightMount .bf-game{
+    width:min(100vw,430px,calc(100svh * 390 / 700)) !important;
+    height:min(100svh,calc(100vw * 700 / 390)) !important;
+    max-height:100svh !important;
+  }
+}
+
+
+
+/* ==========================================================
+   FINAL BACKGROUND SCALE
+   Keep the BSHUSHU route artwork in its original proportions.
+   Wide screens get calm cream side margins instead of stretching.
+========================================================== */
+html.bshushu-flight-lock,
+body.bshushu-flight-lock,
+body.bshushu-flight-lock #allrecords,
+body.bshushu-flight-lock #bshFlightMount{
+  background:#f4ede0 !important;
+}
+
+body.bshushu-flight-lock #bshFlightMount .bf-game{
+  width:min(100vw,430px,calc(100dvh * 390 / 700)) !important;
+  height:min(100dvh,calc(100vw * 700 / 390)) !important;
+  max-width:430px !important;
+  max-height:100dvh !important;
+  aspect-ratio:390/700 !important;
+}
+
+/* Start/finish screen: never stretch the map */
+#bshFlightMount .bf-overlay{
+  background-color:#0f5428 !important;
+  background-image:
+    linear-gradient(rgba(8,55,25,.04),rgba(8,55,25,.04)),
+    url("https://static.tildacdn.com/tild3132-3930-4730-b334-633766353530/EE257B52-EF30-4C2D-B.png") !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  background-size:contain !important;
+}
+
+/* Registration screen: same proportional route map */
+#bshFlightMount #bf-register{
+  background-color:#0f5428 !important;
+  background-image:
+    linear-gradient(rgba(8,55,25,.04),rgba(8,55,25,.04)),
+    url("https://static.tildacdn.com/tild3132-3930-4730-b334-633766353530/EE257B52-EF30-4C2D-B.png") !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  background-size:contain !important;
+}
+
+@supports(height:100svh){
+  body.bshushu-flight-lock #bshFlightMount .bf-game{
+    width:min(100vw,430px,calc(100svh * 390 / 700)) !important;
+    height:min(100svh,calc(100vw * 700 / 390)) !important;
+    max-height:100svh !important;
+  }
+}
+
+/* iPhone: suppress selection loupe, long-press menu and tap flash in the game. */
+#bshFlightMount, #bshFlightMount .bf-game, #bshFlightMount .bf-game *{
+  -webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;
+}
+#bshFlightMount canvas{touch-action:none;-webkit-user-drag:none}
+#bshFlightMount .bf-field input{
+  -webkit-user-select:text;user-select:text;
+  -webkit-touch-callout:default;
+  touch-action:auto;
+}
+
+#bshFlightMount .bf-result{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0;text-align:center}
+#bshFlightMount .bf-result.hidden{display:none}
+#bshFlightMount .bf-result div{padding:9px 4px;border:1px solid #143c4933;border-radius:9px;background:#fff8}
+#bshFlightMount .bf-result small{display:block;font-size:9px;letter-spacing:.5px}
+#bshFlightMount .bf-result b{display:block;font-size:18px;margin-top:3px}
+#bshFlightMount .bf-game.bf-lite .bf-story,#bshFlightMount .bf-game.bf-lite .bf-route{backdrop-filter:none;-webkit-backdrop-filter:none}
+
+#bshFlightMount .bf-finished .bf-overlay .bf-card{max-height:100%;overflow-y:auto;touch-action:pan-y;overscroll-behavior:contain}
+
+#bshFlightMount .bf-sound{position:absolute;z-index:3;left:16px;top:76px;width:auto;padding:7px 10px;font-size:10px;border:1px solid #143c4966;border-radius:20px;background:#f4ede0d9;color:#143c49;min-height:30px;touch-action:manipulation}
+#bshFlightMount .bf-tutorial{position:absolute;z-index:3;left:20px;right:20px;top:43%;padding:15px;border:1px solid #143c4944;border-radius:15px;background:#f4ede0eb;text-align:center;pointer-events:none;color:#143c49}
+#bshFlightMount .bf-tutorial.hidden{display:none}
+#bshFlightMount .bf-tutorial p{font-size:13px;line-height:1.4;margin:6px 0}
+#bshFlightMount .bf-tutorial button{pointer-events:auto;width:auto;margin:5px 0 0;padding:8px;font-size:11px;touch-action:manipulation}
+
+#bshFlightMount #bf-countdown{font-size:48px;font-weight:900;line-height:1.1;margin:5px 0;color:#143c49}
+#bshFlightMount .bf-tutorial>small{font-size:10px;letter-spacing:1px}
+
+#bshFlightMount #bf-guide{background:radial-gradient(ellipse at top,#286541 0%,#124d2c 45%,#092e1c 100%);color:#173d29;padding:18px}
+#bshFlightMount #bf-guide .bf-card{width:100%;max-width:380px;max-height:100%;padding:20px 18px;overflow-y:auto;background:#f5f4e8;border:1px solid #d6dcc8;border-radius:18px;box-shadow:0 12px 36px #05251666;touch-action:pan-y;color:#173d29}
+#bshFlightMount #bf-guide .bf-card>small{color:#386849;font-size:10px;font-weight:800;letter-spacing:1.5px}
+#bshFlightMount #bf-guide h2{color:#123e27;margin:10px 0 18px}
+#bshFlightMount #bf-guide .bf-guide-rules b{color:#164b2e}
+#bshFlightMount #bf-guide .bf-guide-rules p{padding-bottom:10px;border-bottom:1px solid #194e2e22}
+#bshFlightMount #bf-guide .bf-guide-rules p:last-child{border-bottom:0;padding-bottom:0}
+#bshFlightMount #bf-guide-note{color:#49634d}
+#bshFlightMount #bf-guide-go{background:#185232;color:#fffbee;border:1px solid #0d3c22;box-shadow:0 5px 0 #092e1a;border-radius:14px;letter-spacing:.04em}
+#bshFlightMount #bf-guide-go:hover{background:#20633e}
+#bshFlightMount #bf-guide-go:active{transform:translateY(3px);box-shadow:0 2px 0 #092e1a}
+#bshFlightMount #bf-guide-back{color:#285d3b}
+#bshFlightMount #bf-guide button:focus-visible{outline:3px solid #819c56;outline-offset:3px}
+#bshFlightMount .bf-guide-rules{text-align:left}
+#bshFlightMount .bf-guide-rules p{font-size:12px;line-height:1.45;margin:0 0 12px}
+#bshFlightMount .bf-guide-rules b{font-size:13px;color:#143c49}
+#bshFlightMount .bf-safe{position:absolute;z-index:3;left:50%;top:24%;transform:translateX(-50%);width:190px;padding:10px;border-radius:15px;background:#f4ede0e6;text-align:center;color:#143c49;pointer-events:none}
+#bshFlightMount .bf-safe small{display:block;font-size:10px;letter-spacing:1px}
+#bshFlightMount .bf-safe b{display:block;font-size:52px;line-height:1.1}
+#bshFlightMount .bf-safe.hidden,#bshFlightMount .bf-wine.hidden{display:none}
+#bshFlightMount .bf-wine{position:absolute;z-index:3;left:16px;top:111px;padding:6px 10px;border-radius:16px;background:#f4ede0e6;color:#143c49;font-size:11px;font-weight:bold;pointer-events:none}
+</style>
+<script>
+(function(){
+  'use strict';
+// Same deterministic simulation is embedded in the browser and replayed on the server.
+function createFlight(seed,heartEnabled){
+  let randomState=seed>>>0;
+  function random(){randomState=(Math.imul(randomState,1664525)+1013904223)>>>0;return randomState/4294967296}
+  function rand(a,b){return a+random()*(b-a)}
+  const s={frame:0,km:0,miles:0,stage:0,lives:3,invulnerable:5,boost:0,tipsy:0,foodStreak:0,lastStormFrame:-9999,
+    ended:false,reason:'',plane:{x:138,y:300,v:0},items:[],visited:[true,false,false,false],
+    spawn:5.8,bonus:rand(1.2,2),heart:heartEnabled?rand(45,75):999999};
+  const sizes={bird:[62,56],storm:[50,58],wine:[28,76],olive:[50,44],burger:[54,44],paella:[52,38],kebab:[44,46],heart:[34,34]};
+  let upperLaneCountdown=2;
+  function add(obstacle){
+    const stormChance=[.08,.35,.65,.80][s.stage];
+    const stormAllowed=(s.stage!==0||s.frame>=1200)&&(s.frame-s.lastStormFrame)>=[480,240,90,60][s.stage];
+    const kind=obstacle?(random()<stormChance&&stormAllowed?'storm':'bird'):(random()<.35?'wine':['olive','burger','paella','kebab'][s.stage]);
+    const [w,h]=sizes[kind];
+    for(let n=0;n<40;n++){
+      // Upper air corridor: every few hazards force the player away from the ceiling.
+      // Birds/clouds enter from high altitude, so flying permanently at the top is no longer safe.
+      let y;
+      if(obstacle){
+        upperLaneCountdown--;
+        if(upperLaneCountdown<=0){
+          y=rand(105,165);
+          upperLaneCountdown=2+Math.floor(random()*2); // next upper hazard after 2–3 obstacle spawns
+        }else{
+          y=rand(185,481);
+        }
+      }else{
+        y=rand(135,481);
+      }
+      const x=445+rand(0,70);
+      if(s.items.every(o=>Math.abs(o.x-x)>=(o.w+w)/2+20||Math.abs(o.y-y)>=(o.h+h)/2+20)){
+        s.items.push({kind,x,y,w,h,obstacle,seed:rand(0,6),lightningShown:false,lightningTimer:-1,lightningY:0});
+        if(kind==='storm')s.lastStormFrame=s.frame;
+        return true;
+      }
+    }
+    return false;
+  }
+  function damage(events){
+    if(s.invulnerable>0)return;
+    s.lives--;s.invulnerable=2;s.foodStreak=0;
+    events.push({type:'hit',lives:s.lives});
+    if(s.lives<=0){s.ended=true;s.reason='lives'}
+  }
+  function step(held){
+    const events=[],dt=1/60;
+    if(s.ended)return events;
+    s.frame++;
+    s.invulnerable=Math.max(0,s.invulnerable-dt);
+    s.boost=Math.max(0,s.boost-dt);
+    const factor=s.boost>0?1.25:1;
+    // Stronger progression by country:
+    // Greece 1.00x, France 1.25x, Spain 1.50x, Turkey 1.75x.
+    const stageSpeed=[1,1.30,1.60,1.90][s.stage];
+    const speed=120*stageSpeed*factor;
+    s.km+=dt*31*stageSpeed*factor;
+    const next=Math.min(3,Math.floor(s.km/900));
+    if(next!==s.stage){
+      const previous=s.stage;s.stage=next;s.visited[next]=true;
+      s.items=s.items.filter(o=>o.obstacle||o.kind==='wine');
+      events.push({type:'stage',previous,stage:next});
+    }
+    // Five-second wine sway: stronger drift, smooth onset/fade, reproducible on the server.
+    s.tipsy=s.boost>0?Math.max(0,Math.min(1,(5-s.boost)/.4,s.boost/.8)):0;
+    const winePhase=s.frame/60;
+    const wineDrift=s.tipsy*(230*Math.sin(winePhase*3.6)+100*Math.sin(winePhase*1.7+.7));
+    const controlResponse=1-.50*s.tipsy;
+    s.plane.v=Math.max(-176,Math.min(155,s.plane.v+((held?-410:245)*controlResponse+wineDrift)*dt));
+    const wineSwerve=s.tipsy*(135*Math.sin(winePhase*3.6)+65*Math.sin(winePhase*1.7+.7));
+    s.plane.y+=(s.plane.v+wineSwerve)*dt;
+    if(s.plane.y<93){s.plane.y=93;s.plane.v=Math.max(0,s.plane.v)}
+    if(s.plane.y>578){
+      damage(events);s.plane.y=550;s.plane.v=-90;
+      if(s.ended)return events;
+    }
+    const localFood=['olive','burger','paella','kebab'][s.stage];
+    s.items=s.items.filter(o=>!['olive','burger','paella','kebab'].includes(o.kind)||o.kind===localFood);
+    s.spawn-=dt;s.bonus-=dt;s.heart-=dt;
+    // Obstacles become progressively denser; bonuses stay at the old frequency.
+    const obstacleGap=[
+      [2.0,2.6], // Greece: gentle start
+      [.75,1.05],  // France
+      [.34,.50],  // Spain: more frequent storms
+      [.27,.40]   // Turkey: final challenge
+    ][s.stage];
+    if(s.spawn<=0)s.spawn=add(true)?rand(obstacleGap[0],obstacleGap[1]):.12;
+    if(s.bonus<=0)s.bonus=add(false)?rand(1.5,2.6):.15;
+    if(heartEnabled&&s.heart<=0){
+      if(s.lives<3){
+        const hw=34,hh=34,hx=475+rand(0,35),hy=rand(145,500);
+        if(s.items.every(o=>Math.abs(o.x-hx)>=(o.w+hw)/2+26||Math.abs(o.y-hy)>=(o.h+hh)/2+26)){
+          s.items.push({kind:'heart',x:hx,y:hy,w:hw,h:hh,obstacle:false,seed:rand(0,6),lightningShown:false,lightningTimer:-1,lightningY:0});
+          s.heart=rand(45,75);
+        }else s.heart=3;
+      }else s.heart=rand(18,30);
+    }
+    for(const o of s.items){
+      o.x-=speed*dt;o.seed+=dt*2.7;
+      // Storm lightning is physically attached to the cloud.
+      // It strikes vertically DOWN from that cloud, never at a random altitude.
+      if(o.kind==='storm'&&!o.lightningShown&&o.x<=s.plane.x+speed*.38){
+        o.lightningShown=true;
+        o.lightningTimer=.38;
+        events.push({type:'stormWarn',cloud:o});
+      }
+      if(o.kind==='storm'&&o.lightningTimer>=0){
+        o.lightningTimer-=dt;
+        if(o.lightningTimer<=0){
+          o.lightningTimer=-2;
+          events.push({type:'storm',cloud:o,strikeX:o.x});
+          // A life is removed ONLY if the plane is directly underneath this cloud.
+          // Visible bolt is centered under the cloud image.
+          const boltX=o.x;
+          const boltHalfWidth=Math.max(30,o.w*.55);
+          const cloudBottom=o.y+o.h*.18;
+          const planeUnderBolt=Math.abs(s.plane.x-boltX)<=boltHalfWidth;
+          const planeBelowCloud=s.plane.y>=cloudBottom-10;
+          const boltEnd=cloudBottom+(718-cloudBottom)*.2;
+          const planeWithinBolt=s.plane.y<=boltEnd+18;
+          if(planeUnderBolt&&planeBelowCloud&&planeWithinBolt){
+            damage(events);
+            if(s.ended)return events;
+          }
+        }
+      }
+      const y=o.y+(o.kind==='bird'?Math.sin(o.seed)*6:0);
+      const distance=Math.hypot(o.x-s.plane.x,y-s.plane.y);
+      if(o.kind==='bird'){
+        o.closest=Math.min(o.closest===undefined?Infinity:o.closest,distance);
+        if(!o.nearMissDone&&o.x<s.plane.x-40){
+          o.nearMissDone=true;
+          if(o.closest>=28&&o.closest<52){s.miles+=5;events.push({type:'nearMiss',miles:5});}
+        }
+      }
+      if(distance<(o.obstacle?(o.kind==='storm'?33:28):33)){
+        if(o.obstacle){
+          if(o.kind!=='storm'&&s.invulnerable<=0){
+            o.x=-100;damage(events);if(s.ended)return events
+          }
+        }else{
+          o.x=-100;
+          if(o.kind==='wine')s.boost=5;
+          else if(o.kind==='heart'){s.lives=Math.min(3,s.lives+1);events.push({type:'heart',lives:s.lives});}
+          else{
+            s.miles+=10;s.foodStreak++;
+            if(s.foodStreak===3){s.miles+=20;s.foodStreak=0;events.push({type:'combo',miles:20});}
+          }
+          if(o.kind!=='heart')events.push({type:'bonus',kind:o.kind});
+        }
+      }
+    }
+    s.items=s.items.filter(o=>o.x>-75);
+    if(s.frame>=10800){s.ended=true;s.reason='time'}
+    return events;
+  }
+  return {state:s,step};
+}
+
+  var mount=document.getElementById('bshFlightMount');
+  if(!mount||mount.dataset.flightReady)return;
+  mount.dataset.flightReady='1';
+  var $=id=>mount.querySelector('#'+id);
+  var canvas=$('bf-canvas'),ctx=canvas.getContext('2d',{alpha:false}),overlay=$('bf-overlay');
+  var renderScale=Math.min(window.devicePixelRatio||1,1.5),liteMode=false,slowFrames=0,perfFrames=0,perfTotal=0;
+  var hazeSprite=document.createElement('canvas');hazeSprite.width=180;hazeSprite.height=44;
+  var hazeCtx=hazeSprite.getContext('2d'),hazeGradient=hazeCtx.createRadialGradient(90,22,2,90,22,90);
+  hazeGradient.addColorStop(0,'rgba(255,250,235,.105)');hazeGradient.addColorStop(.58,'rgba(255,250,235,.055)');hazeGradient.addColorStop(1,'rgba(255,250,235,0)');
+  hazeCtx.fillStyle=hazeGradient;hazeCtx.fillRect(0,0,180,44);
+  var W=390,H=700,GROUND=606,STAGE=900,stage=0,oldStage=-1,fade=0;
+  var phoneLayout=window.matchMedia('(max-width: 600px), (pointer: coarse)');
+  var state='menu',pressed=false,last=0,elapsed=0,km=0,miles=0,boost=0,spawn=1,bonus=1.5;
+  var plane={x:96,y:300,v:0},items=[],lightnings=[],particles=[],toastTime=0,cameraShake=0;
+  var names=['ГРЕЦИЯ','ФРАНЦИЯ','ИСПАНИЯ','ТУРЦИЯ'];
+  var flight=null,accumulator=0,inputs=[],lastInput=null,officialRun=null,pendingResult=null,backendReady=false;
+  var tutorialActive=false,tutorialStep=-1,tutorialSeen=false,audioContext=null,soundEnabled=false;
+  try{tutorialSeen=localStorage.getItem('bshushu_tutorial_seen')==='1';soundEnabled=localStorage.getItem('bshushu_sound')==='1'}catch(e){}
+  var rafId=0,startBusy=false,submitBusy=false,retryTimer=0,retryDelay=3000,comboAwardUntil=0,nearMissUntil=0,playerName="Гость BSHUSHU",shareBusy=false;
+  function rememberPending(){try{if(pendingResult)localStorage.setItem('bshushu_pending_flight',JSON.stringify(pendingResult));else localStorage.removeItem('bshushu_pending_flight')}catch(e){}
+    try{if(pendingResult)sessionStorage.setItem('bshushu_pending_flight',JSON.stringify(pendingResult));else sessionStorage.removeItem('bshushu_pending_flight')}catch(e){}}
+  function scheduleRetry(){clearTimeout(retryTimer);if(!pendingResult||document.hidden||navigator.onLine===false)return;retryTimer=setTimeout(submitResult,retryDelay);retryDelay=Math.min(60000,retryDelay*2)}
+  var SUPABASE_URL='https://vtllofdosyrfqdqrjwwg.supabase.co';
+  var PUBLIC_KEY='sb_publishable__WnPBgIYu39nSvJlVTYGmg_jVFsQXDX';
+  var passport=[false,false,false,false];
+  try{var savedPassport=JSON.parse(localStorage.getItem('bshushu_flight_passport')||'null');if(Array.isArray(savedPassport)&&savedPassport.length===4)passport=savedPassport.map(Boolean)}catch(e){}
+  var storyTitles=["Греция · Лето на тарелке", "Франция · Утро без спешки", "Испания · Вкуснее вместе", "Турция · Вкусный финал"];
+  var countryMenuNotes=["Теперь греческий салат есть и в BSHUSHU.", "Путешествие продолжается, а френч-бургер остаётся в меню BSHUSHU.", "", "У нашего путешествия тоже есть аппетитный финал — донер-кебаб в BSHUSHU."];
+  var countryMenuShown=[false,false,false,false];
+  var stories=[
+    [
+        "В классическом греческом салате нет салатных листьев: только сочные овощи, оливки и фета. Просто, щедро и по-летнему.",
+        "У Санторини есть свой гастрономический сюрприз: «фава» здесь — нежное пюре из жёлтого колотого гороха. Название легко сбивает с толку!",
+        "Помидоры на Санторини превращают в томатные оладьи: хрустящая корочка снаружи, сочная начинка внутри. Ещё один повод задержаться на острове.",
+        "Мезедес — небольшие греческие закуски для компании. Их удобно делить, пробовать понемногу и растягивать разговор до заката."
+    ],
+    [
+        "У французского стола есть особая магия: не торопиться, пробовать и разговаривать. Возьми этот ритм с собой в отпуск.",
+        "Французский гастрономический обед признан наследием ЮНЕСКО. В центре внимания — весь ритуал: выбор блюд, сервировка и удовольствие от общения.",
+        "У багета тоже есть место в списке наследия ЮНЕСКО. Там отмечены ремесло пекарей и традиции, связанные с этим хлебом.",
+        "Во французском праздничном обеде сыр может стать отдельным курсом перед десертом. Между основным блюдом и сладким есть время для ещё одного удовольствия."
+    ],
+    [
+        "За маленькими закусками здесь можно отправиться из одного бара в другой — такое путешествие называют «тапео». Пробовать понемногу, делиться и никуда не торопиться.",
+        "По одной из версий, «тапа» связана с крышкой для бокала, роль которой могла играть закуска. Точное происхождение спорно, зато традиция получилась вкусной.",
+        "В жаркой Андалусии суп подают холодным. Гаспачо освежает и напоминает: иногда лучший рецепт подсказывает само лето.",
+        "Гаспачо и сальморехо — два холодных андалусских супа. Сальморехо обычно гуще: даже у освежающего обеда бывает свой характер."
+    ],
+    [
+        "Название «донер» связано с вращением: мясо медленно поворачивается перед жаром.",
+        "После турецкого кофе разговор может продолжиться над чашкой: по узорам оставшейся гущи иногда гадают. Маленькая история даже после последнего глотка.",
+        "В Бурсе искендер-кебаб подают на хлебе с томатным соусом, йогуртом и горячим маслом. Один поднос — сразу несколько вкусов и текстур.",
+        "Турецкая кофейная традиция входит в список наследия ЮНЕСКО. Ценится целая культура приготовления, гостеприимства и общения за чашкой."
+    ]
+];
+  var storyBags=[[],[],[],[]],lastStory=[-1,-1,-1,-1],nextStory=0,hideStory=0;
+  var panoramaURL='https://static.tildacdn.com/tild6439-3030-4734-b334-343231383933/6653EDE4-3426-4BBB-8.png'; // Optional: paste the direct https://static.tildacdn.com/... URL here.
+  var backgroundURLs=[
+  'https://static.tildacdn.com/tild3639-6366-4834-b063-636537393336/BSHUSHU_GREECE.jpg',
+  'https://static.tildacdn.com/tild3131-3733-4163-a331-306530373339/BSHUSHU_FRANCE.jpg',
+  'https://static.tildacdn.com/tild3236-3633-4433-b533-353136353139/BSHUSHU_SPAIN.jpg',
+  'https://static.tildacdn.com/tild6563-6639-4264-b464-333563626231/BSHUSHU_TURKEY.jpg'
+];
+  var planeURL='https://static.tildacdn.com/tild6535-3564-4533-b163-643539643164/BSHUSHU_PLANE_BODY.png';
+  var sheetURLs=[
+    'https://static.tildacdn.com/tild6630-6537-4965-b032-623763343032/exec-dba47140-f3bb-4.png',
+    'https://static.tildacdn.com/tild3162-6564-4239-b561-343136663762/9C15DE54-F9F4-46A5-B.png'
+  ];
+  function load(url,onload){var im=new Image();im.decoding='async';im.onload=()=>onload(im);im.src=url;return im}
+  var backgrounds=backgroundURLs.map(url=>{
+    var cache={canvas:null,width:0};
+    if(panoramaURL)return cache;
+    load(url,im=>{
+      // Background is rendered slightly larger than the viewport.
+      // This gives us real camera travel even when the photo has
+      // almost exactly the same aspect ratio as the phone screen.
+      var bgScale=1.22;
+      var height=Math.ceil(H*bgScale);
+      var width=Math.ceil(im.naturalWidth*height/im.naturalHeight);
+      var c=document.createElement('canvas');c.width=width;c.height=height;
+      c.getContext('2d',{alpha:false}).drawImage(im,0,0,width,height);
+      cache.canvas=c;cache.width=width;cache.height=height;
+      if(state!=='playing')draw();
+    });
+    return cache;
+  });
+  // One continuous panoramic coast, loaded from a normal Tilda image block.
+  // In that block set the image description / ALT to BSHUSHU_PANORAMA.
+  var panorama={canvas:null,width:0},panoramaLoading=false;
+  function loadPanorama(url){
+    if(!url||panoramaLoading)return;
+    panoramaLoading=true;
+    var im=new Image();
+    im.onload=function(){
+      if(im.naturalWidth/im.naturalHeight<2.5){panoramaLoading=false;return}
+      var c=document.createElement('canvas');
+      c.height=H;c.width=Math.round(im.naturalWidth*H/im.naturalHeight);
+      c.getContext('2d',{alpha:false}).drawImage(im,0,0,c.width,c.height);
+      panorama.canvas=c;panorama.width=c.width;
+      if(panoramaObserver)panoramaObserver.disconnect();
+      if(state!=='playing')draw();
+    };
+    im.onerror=function(){panoramaLoading=false};
+    im.src=url;
+  }
+  function findPanorama(){
+    if(panorama.canvas||panoramaLoading)return;
+    if(panoramaURL){loadPanorama(panoramaURL);return}
+    var candidates=document.querySelectorAll('img,[data-original],[data-img-zoom-url]');
+    for(var i=0;i<candidates.length;i++){
+      var el=candidates[i];
+      var url=el.getAttribute('data-original')||el.getAttribute('data-img-zoom-url')||el.getAttribute('src');
+      var label=(el.getAttribute('alt')||'')+' '+(el.getAttribute('title')||'');
+      if(url&&(/BSHUSHU_PANORAMA/i.test(label)||/A966D3CE/i.test(url))){loadPanorama(url);return}
+    }
+  }
+  var panoramaObserver=new MutationObserver(findPanorama);
+  panoramaObserver.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['alt','src','data-original','data-img-zoom-url']});
+  findPanorama();
+  document.addEventListener('DOMContentLoaded',findPanorama,{once:true});
+
+  var planeImage=null, planeBanner=null, planeBody=null, propellerImage=null;
+  var propellerURL='https://static.tildacdn.com/tild3533-3839-4662-b765-373265633437/BSHUSHU_PROPELLER.png';
+  load(planeURL,im=>{
+    // Rasterize the very large source once. Per frame we draw small cached slices.
+    planeImage=im;
+    var sourceCut=Math.round(im.naturalWidth*625/1737);
+    var banner=document.createElement('canvas');banner.width=70;banner.height=76;
+    banner.getContext('2d').drawImage(im,0,0,sourceCut,im.naturalHeight,0,0,70,76);
+    var body=document.createElement('canvas');body.width=121;body.height=76;
+    body.getContext('2d').drawImage(im,sourceCut,0,im.naturalWidth-sourceCut,im.naturalHeight,0,0,121,76);
+    planeBanner=banner;planeBody=body;
+    if(state!=='playing')draw();
+  });
+  // Propeller is drawn procedurally; no separate image download is needed.
+  var sprites={},defs={
+    bird:[0,0,0,930,724,124,88],wine:[0,1000,0,270,724,56,152],
+    olive:[0,1400,0,772,724,100,88],storm:[1,0,0,535,724,124,144],
+    kebab:[1,535,0,570,724,88,92],
+    paella:[1,1605,0,567,724,104,76]
+  };
+  // Compact burger sprite is cached once; no image upload or extra request required.
+  sprites.burger=(function(){
+    var c=document.createElement('canvas');c.width=108;c.height=88;
+    var g=c.getContext('2d');
+    function oval(x,y,rx,ry,color){g.fillStyle=color;g.beginPath();g.ellipse(x,y,rx,ry,0,0,Math.PI*2);g.fill()}
+    oval(54,79,44,5,'rgba(20,50,25,.16)');
+    var lower=g.createLinearGradient(0,61,0,79);lower.addColorStop(0,'#f2c06b');lower.addColorStop(1,'#b97632');
+    oval(54,68,43,11,lower);
+    oval(54,61,42,9,'#542f21');
+    g.fillStyle='#efc16b';g.beginPath();g.moveTo(13,48);g.lineTo(93,48);g.lineTo(86,63);g.lineTo(67,55);g.lineTo(43,64);g.lineTo(24,55);g.closePath();g.fill();
+    oval(54,48,41,7,'#a36a32');
+    g.strokeStyle='#deb679';g.lineWidth=3;g.lineCap='round';
+    for(var i=0;i<5;i++){g.beginPath();g.moveTo(20+i*14,46);g.quadraticCurveTo(27+i*14,38,34+i*14,47);g.stroke()}
+    var bun=g.createLinearGradient(0,14,0,45);bun.addColorStop(0,'#ffe1a0');bun.addColorStop(.5,'#eab566');bun.addColorStop(1,'#b77936');
+    g.fillStyle=bun;g.beginPath();g.moveTo(12,42);g.bezierCurveTo(11,8,97,8,96,42);g.quadraticCurveTo(54,53,12,42);g.fill();
+    g.strokeStyle='#c28943';g.lineWidth=1.5;g.stroke();
+    for(var j=0;j<8;j++){g.save();g.translate(24+j*8,29+Math.sin(j*1.8)*6);g.rotate(j*.9);oval(0,0,2.4,.9,'#fff0bf');g.restore()}
+    return c;
+  })();
+  sheetURLs.forEach((url,index)=>load(url,im=>{
+    Object.keys(defs).forEach(kind=>{
+      var r=defs[kind];if(r[0]!==index)return;
+      var c=document.createElement('canvas');c.width=r[5];c.height=r[6];
+      c.getContext('2d').drawImage(im,r[1]*im.naturalWidth/2172,r[2]*im.naturalHeight/724,r[3]*im.naturalWidth/2172,r[4]*im.naturalHeight/724,0,0,r[5],r[6]);
+      sprites[kind]=c;
+    });
+    if(state!=='playing')draw();
+  }));
+  function fit(){
+    var d=renderScale;
+    var width=Math.round(W*d),height=Math.round(H*d);
+    if(canvas.width===width&&canvas.height===height)return;
+    canvas.width=width;canvas.height=height;
+    ctx.setTransform(canvas.width/W,0,0,canvas.height/H,0,0);
+    ctx.imageSmoothingQuality='medium';
+  }
+  function rand(a,b){return a+Math.random()*(b-a)}
+  function soundButton(){
+    $('bf-sound').textContent=soundEnabled?'Звук: вкл.':'Звук: выкл.';
+    $('bf-sound').setAttribute('aria-pressed',String(soundEnabled));
+    $('bf-sound').setAttribute('aria-label',soundEnabled?'Выключить звук':'Включить звук');
+  }
+  function unlockAudio(){
+    if(!soundEnabled)return;
+    try{var Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;if(!audioContext)audioContext=new Audio();if(audioContext.state==='suspended')audioContext.resume().catch(()=>{})}catch(e){}
+  }
+  function playSound(kind){
+    if(!soundEnabled||!audioContext||audioContext.state!=='running'||document.hidden)return;
+    try{
+      var now=audioContext.currentTime,tones=kind==='combo'?[660,830,990]:kind==='storm'?[95,55]:kind==='hit'?[170,95]:kind==='nearMiss'?[740,920]:[560,760];
+      tones.forEach((freq,i)=>{var oscillator=audioContext.createOscillator(),gain=audioContext.createGain(),time=now+i*.07;oscillator.type=kind==='storm'?'triangle':'sine';oscillator.frequency.setValueAtTime(freq,time);gain.gain.setValueAtTime(0,time);gain.gain.linearRampToValueAtTime(.045,time+.01);gain.gain.exponentialRampToValueAtTime(.001,time+.13);oscillator.connect(gain);gain.connect(audioContext.destination);oscillator.start(time);oscillator.stop(time+.15);oscillator.onended=()=>{oscillator.disconnect();gain.disconnect()}});
+    }catch(e){}
+  }
+  $('bf-sound').addEventListener('click',()=>{soundEnabled=!soundEnabled;try{localStorage.setItem('bshushu_sound',soundEnabled?'1':'0')}catch(e){}soundButton();unlockAudio();if(soundEnabled)playSound('bonus')});
+  function endTutorial(){
+    if(!tutorialActive)return;
+    tutorialActive=false;tutorialSeen=true;pressed=false;
+    $('bf-tutorial').classList.add('hidden');
+    try{localStorage.setItem('bshushu_tutorial_seen','1')}catch(e){}
+    showStory();toast('✈ Готов к путешествию!');
+  }
+  $('bf-tutorial-skip').addEventListener('click',endTutorial);
+  function tutorialHud(){
+    if(!tutorialActive)return;
+    var step=elapsed<1.7?0:elapsed<3.4?1:2;
+    if(step!==tutorialStep){tutorialStep=step;$('bf-tutorial-title').textContent=['Удерживай — вверх','Отпусти — вниз','Собирай еду, избегай препятствий'][step];$('bf-tutorial-text').textContent=['Нажми на игровое поле и держи палец.','Убери палец — самолёт начнёт снижаться.','Еда даёт мили. Чайки и молнии забирают жизни.'][step]}
+    if(elapsed>=5)endTutorial();
+  }
+  function toast(message){
+    $('bf-toast').textContent=message;
+    $('bf-toast').classList.add('show');
+    toastTime=elapsed+2.2;
+  }
+  function showStory(){
+    var bag=storyBags[stage];
+    if(!bag.length){
+      for(var i=0;i<stories[stage].length;i++)if(i!==lastStory[stage])bag.push(i);
+    }
+    var index=bag.splice(Math.floor(Math.random()*bag.length),1)[0];
+    lastStory[stage]=index;
+    $('bf-story-country').textContent=storyTitles[stage];
+    var menuNote=!countryMenuShown[stage]?countryMenuNotes[stage]:'';
+    $('bf-story-text').textContent=stories[stage][index]+(menuNote?' '+menuNote:'');
+    countryMenuShown[stage]=true;
+    $('bf-story').classList.add('show');
+    hideStory=elapsed+7.5;
+    nextStory=elapsed+rand(11,14);
+  }
+  function hud(){
+    $('bf-km').textContent=Math.floor(km);
+    $('bf-miles').textContent='✦ '+miles+' миль';
+    $('bf-wine').classList.toggle('hidden',!(boost>0&&state==='playing'));
+    if(boost>0)$('bf-wine').textContent='🍾 Навеселе · '+Math.ceil(boost)+' сек.';
+    $('bf-combo').textContent=elapsed<comboAwardUntil?'Вкусная серия: 3/3 · +20 миль':'Вкусная серия: '+(flight?flight.state.foodStreak:0)+'/3';
+    $('bf-place').textContent=names[stage];
+    $('bf-lives').textContent='♥ '.repeat(flight?flight.state.lives:3)+'♡ '.repeat(flight?3-flight.state.lives:0);
+    $('bf-fill').style.width=Math.min(100,km/(STAGE*4)*100)+'%';
+    mount.querySelectorAll('.bf-stops span').forEach((el,i)=>{el.classList.toggle('active',i===stage);el.classList.toggle('visited',!!flight&&flight.state.visited[i])});
+  }
+  function passportView(){
+    $('bf-passport').innerHTML=passport.map((earned,i)=>'<div class="bf-stamp '+(earned?'earned':'')+'">'+(earned?'✓ ':'')+['Греция','Франция','Испания','Турция'][i]+'</div>').join('');
+  }
+  function savePassport(){
+    if(flight)flight.state.visited.forEach((v,i)=>{if(v)passport[i]=true});
+    try{localStorage.setItem('bshushu_flight_passport',JSON.stringify(passport))}catch(e){}
+    passportView();
+  }
+  function start(run){
+    if(state==='playing'||state==='paused'||startBusy&&!run)return;
+    gameSurface.classList.remove('bf-finished');
+    officialRun=run||null;
+    var seed=run?Number(run.seed):Math.floor(Math.random()*4294967296);
+    flight=createFlight(seed,!run);inputs=[];lastInput=null;accumulator=0;
+    tutorialActive=!run&&!tutorialSeen;tutorialStep=-1;
+    if(tutorialActive)flight.state.bonus=5.4;
+    $('bf-safe').classList.remove('hidden');$('bf-countdown').textContent='5';$('bf-wine').classList.add('hidden');
+    $('bf-tutorial').classList.toggle('hidden',!tutorialActive);unlockAudio();
+    state='playing';pressed=false;perfFrames=0;perfTotal=0;slowFrames=0;last=performance.now();elapsed=0;km=0;miles=0;boost=0;
+    stage=0;oldStage=-1;fade=0;comboAwardUntil=0;nearMissUntil=0;
+    playerName=run?($('bf-name').value.trim()||'Гость BSHUSHU'):'Гость BSHUSHU';
+    $('bf-share').classList.add('hidden');
+    storyBags=[[],[],[],[]];lastStory=[-1,-1,-1,-1];countryMenuShown=[false,false,false,false];
+    plane=flight.state.plane;items=flight.state.items;lightnings=[];
+    overlay.classList.add('hidden');$('bf-register').classList.add('hidden');
+    $('bf-status').textContent='';$('bf-result').classList.add('hidden');$('bf-retry').classList.add('hidden');
+    hud();if(tutorialActive){$('bf-story').classList.remove('show');$('bf-toast').classList.remove('show');nextStory=100000;hideStory=0;tutorialHud()}else showStory();if(!tutorialActive)toast(run?'✈ Зачётный полёт':'✈ Тренировка · 3 жизни · редкое ❤️');rafId=requestAnimationFrame(frame);if(document.hidden)pauseFlight();
+  }
+  function finish(){
+    state='over';pressed=false;$('bf-safe').classList.add('hidden');$('bf-wine').classList.add('hidden');$('bf-tutorial').classList.add('hidden');gameSurface.classList.add('bf-finished');savePassport();
+    var best=0,previousBest=0;
+    try{previousBest=Number(localStorage.getItem('bshushu_flight_best'))||0;best=Math.max(previousBest,Math.floor(km));localStorage.setItem('bshushu_flight_best',String(best))}catch(e){best=Math.floor(km)}
+    $('bf-label').textContent=officialRun?'ЗАЧЁТНЫЙ ПОЛЁТ':'ТРЕНИРОВОЧНЫЙ ПОЛЁТ';
+    $('bf-title').textContent=['К берегам Греции','Bonjour, Франция!','Hola, Испания!','Merhaba, Турция!'][stage];
+    $('bf-description').textContent=(km>=STAGE*4?'Все четыре страны позади. Отличное путешествие!':'Твой рейс достиг '+['Греции','Франции','Испании','Турции'][stage]+'. Следующий полёт — новый шанс пройти дальше.')+(Math.floor(km)>previousBest?' Новый личный рекорд!':'');
+    $('bf-result').innerHTML='<div><small>ДИСТАНЦИЯ</small><b>'+Math.floor(km)+' км</b></div><div><small>ОТПУСКНЫЕ МИЛИ</small><b>'+miles+'</b></div><div><small>ВРЕМЯ В ПОЛЁТЕ</small><b>'+Math.floor(elapsed/60)+':'+String(Math.floor(elapsed)%60).padStart(2,'0')+'</b></div><div><small>ЛИЧНЫЙ РЕКОРД</small><b>'+best+' км</b></div>';
+    $('bf-result').classList.remove('hidden');$('bf-share').classList.remove('hidden');
+    $('bf-passport').innerHTML=flight.state.visited.map((v,i)=>'<div class="bf-stamp '+(v?'earned':'')+'">'+(v?'✓ ':'')+['Греция','Франция','Испания','Турция'][i]+'</div>').join('');
+    $('bf-start').textContent='ТРЕНИРОВАТЬСЯ ЕЩЁ →';
+    overlay.classList.remove('hidden');
+    if(officialRun){
+      pendingResult={action:'save',token:officialRun.token,frames:flight.state.frame,inputs:inputs};
+      rememberPending();
+      submitResult();
+    }else { $('bf-status').textContent=pendingResult?'Есть зачётный полёт, который ещё нужно отправить. Нажмите «Повторить отправку».':'Тренировка не участвует в рейтинге. Зачётный полёт — одна попытка в неделю, до 3 минут.'; if(pendingResult)$('bf-retry').classList.remove('hidden'); }
+  }
+  async function api(action){
+    var controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+    try{
+      var response=await fetch(SUPABASE_URL+'/functions/v1/bshushu-flight',{method:'POST',signal:controller.signal,headers:{apikey:PUBLIC_KEY,'Content-Type':'application/json'},body:JSON.stringify(action)});
+      var d=await response.json();
+      if(!response.ok||d.error){var error=new Error(d.error||'Не удалось связаться с рестораном');error.retryable=response.status>=500||response.status===429;throw error}
+      return d;
+    }catch(e){if(e.retryable===undefined)e.retryable=true;throw e}
+    finally{clearTimeout(timer)}
+  }
+  async function submitResult(){
+    if(!pendingResult||submitBusy)return;
+    clearTimeout(retryTimer);
+    if(navigator.onLine===false){$('bf-status').textContent='Нет связи. Результат сохранён на устройстве и отправится, когда интернет вернётся.';$('bf-retry').classList.remove('hidden');return}
+    var payload=pendingResult;
+    submitBusy=true;$('bf-retry').disabled=true;$('bf-status').textContent='Сохраняем зачётный полёт…';
+    try{
+      var result=await api(payload);
+      var rank=Number(result.rank);
+      $('bf-status').textContent='Результат сохранён: '+result.distance+' км. '+(rank>0?'Твоё место сейчас: '+rank+'. '+(rank<=3?'Ты в призовой тройке! ':''):'')+'Итоги — в понедельник. Место может измениться до конца недели.';
+      if(pendingResult===payload){pendingResult=null;rememberPending()}
+      retryDelay=3000;$('bf-retry').classList.add('hidden');
+    }catch(e){$('bf-status').textContent=e.retryable?'Результат сохранён на устройстве. Повторим отправку автоматически, когда появится связь.':'Сервер не принял результат: '+e.message;$('bf-retry').classList.remove('hidden');if(e.retryable)scheduleRetry()}
+    finally{submitBusy=false;$('bf-retry').disabled=false}
+  }
+  function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function dateLabel(s){return new Date(s+'T12:00:00+03:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}
+  async function board(open){
+    if(open){$('bf-board-panel').classList.remove('hidden');$('bf-board-list').textContent='Загружаем результаты…'}
+    try{
+      var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/bsh_flight_board',{method:'POST',headers:{apikey:PUBLIC_KEY,'Content-Type':'application/json'},body:'{}'});
+      var d=await r.json();if(!r.ok||!Array.isArray(d.rows))throw new Error('Рейтинг временно недоступен');
+      backendReady=true;$('bf-official').disabled=false;
+      var deadline='Итоги: '+new Date(d.weekEndsAt).toLocaleString('ru-RU',{timeZone:'Europe/Moscow',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})+' МСК';
+      $('bf-week').textContent='Неделя с '+dateLabel(d.weekStart)+'. '+deadline;
+      $('bf-deadline').textContent=deadline+' · одна зачётная попытка за неделю.';
+      $('bf-podium').innerHTML=[0,1,2].map(i=>{
+        var row=d.rows[i],gift=(d.prizes||[]).find(p=>p.place===i+1);
+        var giftTitle=gift&&!/^Подарок за /i.test(gift.title)?gift.title:['Пицца','Десерт','Напиток'][i];
+        return '<div class="bf-pod">'+['🥇','🥈','🥉'][i]+'<b>'+esc(row?row.name:'Место свободно')+'</b><small>'+(row?row.distance+' км':'—')+'</small><small>'+esc(giftTitle)+'</small></div>';
+      }).join('');
+      $('bf-board-list').innerHTML=d.rows.length?d.rows.map(row=>'<div class="bf-board-row"><span>'+row.rank+'</span><span>'+esc(row.name)+'</span><span>'+row.distance+' км · '+row.miles+' миль</span></div>').join(''):'Первый зачётный полёт может стать твоим!';
+      $('bf-winners').innerHTML=d.winners.length?'<b>Победители недели с '+dateLabel(d.previousWeek)+'</b><br>'+d.winners.map(w=>w.place+'. '+esc(w.name)+' — '+esc(w.gift)).join('<br>'):'';
+    }catch(e){
+      if(open){$('bf-week').textContent='';$('bf-podium').innerHTML='';$('bf-winners').innerHTML='';$('bf-board-list').textContent='Зачётные полёты временно недоступны. Можно потренироваться.'}
+    }
+  }
+  function ticketCanvas(){
+    var c=document.createElement('canvas');c.width=1080;c.height=1350;
+    var g=c.getContext('2d');g.fillStyle='#f4ede0';g.fillRect(0,0,c.width,c.height);
+    g.fillStyle='#143c49';g.fillRect(0,0,1080,220);g.fillStyle='#f4ede0';g.font='bold 64px Arial';g.fillText('BSHUSHU',70,110);g.font='26px Arial';g.fillText('FLIGHT CLUB · ПОСАДОЧНЫЙ ТАЛОН',70,165);
+    g.fillStyle='#143c49';g.font='bold 45px Arial';
+    var guest=Array.from(playerName).slice(0,24).join('');
+    while(g.measureText(guest).width>920)guest=guest.slice(0,-1);
+    g.fillText(guest,70,305);g.font='25px Arial';g.fillText(officialRun?'ЗАЧЁТНЫЙ ПОЛЁТ':'ТРЕНИРОВОЧНЫЙ ПОЛЁТ',70,355);
+    g.font='bold 115px Arial';g.fillText(Math.floor(km)+' км',70,510);
+    g.font='32px Arial';g.fillText(miles+' отпускных миль · '+Math.floor(elapsed/60)+':'+String(Math.floor(elapsed)%60).padStart(2,'0')+' в полёте',70,575);
+    g.font='bold 38px Arial';g.fillText('ТВОЯ ОСТАНОВКА: '+names[stage],70,675);
+    g.setLineDash([10,12]);g.strokeStyle='#143c4966';g.beginPath();g.moveTo(70,735);g.lineTo(1010,735);g.stroke();g.setLineDash([]);
+    ['ГРЕЦИЯ','ФРАНЦИЯ','ИСПАНИЯ','ТУРЦИЯ'].forEach((name,i)=>{
+      g.fillStyle=flight.state.visited[i]?'#143c49':'#a2a9a5';g.font='bold 23px Arial';g.fillText((flight.state.visited[i]?'✓ ':'')+name,70+i*245,805);
+    });
+    var qr=[[true,true,true,true,true,true,true,false,false,true,true,false,true,true,true,true,false,true,false,true,false,false,true,true,false,false,true,true,true,true,true,true,true],[true,false,false,false,false,false,true,false,false,false,true,false,true,true,true,true,true,false,true,false,false,false,true,true,false,false,true,false,false,false,false,false,true],[true,false,true,true,true,false,true,false,false,true,false,false,false,true,false,true,true,false,true,true,true,false,false,false,true,false,true,false,true,true,true,false,true],[true,false,true,true,true,false,true,false,false,false,false,true,true,true,true,true,true,true,true,false,true,false,false,true,true,false,true,false,true,true,true,false,true],[true,false,true,true,true,false,true,false,false,true,false,false,true,false,true,false,false,false,true,true,true,false,false,true,false,false,true,false,true,true,true,false,true],[true,false,false,false,false,false,true,false,true,false,false,false,true,true,false,true,true,true,false,true,false,true,false,false,true,false,true,false,false,false,false,false,true],[true,true,true,true,true,true,true,false,true,false,true,false,true,false,true,false,true,false,true,false,true,false,true,false,true,false,true,true,true,true,true,true,true],[false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,true,true,true,true,false,false,true,false,false,true,false,false,false,false,false,false,false,false],[true,false,false,true,false,true,true,false,true,true,true,true,true,true,true,false,true,false,false,false,false,true,false,true,false,true,false,true,false,false,false,false,false],[true,false,false,false,true,false,false,true,true,true,false,true,false,true,true,false,true,true,false,false,true,false,false,false,true,true,true,true,false,false,false,true,true],[false,true,true,true,true,true,true,true,true,true,false,false,true,true,true,false,true,false,true,true,false,true,true,false,false,true,false,true,true,false,true,false,true],[false,true,true,true,true,true,false,true,false,true,true,false,false,true,false,true,true,false,true,true,false,true,true,false,true,false,true,false,true,true,false,false,false],[true,false,false,false,false,true,true,true,false,false,false,true,true,false,true,true,true,false,true,false,true,false,true,false,false,true,true,false,false,true,false,true,true],[false,true,true,true,true,true,false,false,false,false,false,true,true,true,true,true,false,false,true,false,true,false,true,false,true,false,true,false,true,true,true,true,true],[true,true,true,true,true,false,true,true,true,false,false,true,false,true,false,true,true,true,true,true,false,false,false,true,true,true,true,false,true,false,true,true,false],[true,true,false,false,false,true,false,false,true,true,false,true,false,true,true,false,true,true,true,false,true,true,false,false,true,false,true,false,false,false,false,true,false],[false,false,false,false,true,true,true,false,true,true,true,false,false,false,true,true,false,true,false,false,true,true,true,true,false,false,true,false,true,false,false,true,false],[false,false,false,true,true,false,false,false,true,true,false,false,false,true,true,false,false,true,true,false,false,false,false,true,true,true,false,true,false,true,false,true,false],[true,false,false,true,false,true,true,false,true,false,true,false,false,false,false,false,false,true,false,false,false,true,false,false,true,true,false,false,false,false,true,true,true],[true,false,true,true,false,false,false,false,true,true,false,true,false,false,true,true,false,false,false,true,false,false,true,true,true,false,false,true,false,false,false,true,false],[false,false,true,false,true,true,true,true,false,true,false,true,true,false,true,false,false,true,false,false,true,false,false,true,true,true,false,true,false,false,false,true,false],[false,false,false,true,false,false,false,false,true,false,true,false,true,true,false,true,false,true,false,true,false,false,false,false,false,true,true,false,false,false,true,true,true],[true,true,true,true,true,true,true,false,true,false,true,false,true,true,true,false,true,false,false,true,false,false,true,false,false,false,false,false,true,false,true,false,true],[false,true,false,true,false,true,false,false,false,false,true,true,true,false,false,true,false,false,false,true,true,true,false,false,false,true,false,false,true,true,false,true,false],[true,false,false,true,true,false,true,false,false,false,false,true,true,false,true,false,true,true,false,false,false,true,false,false,true,true,true,true,true,false,false,true,false],[false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,false,true,false,true,true,true,false,false,true,false,false,false,true,true,false,false,true],[true,true,true,true,true,true,true,false,false,false,true,false,false,true,false,false,true,true,true,false,true,false,true,false,true,false,true,false,true,true,true,true,false],[true,false,false,false,false,false,true,false,true,true,false,true,false,true,false,false,true,true,true,true,true,true,true,false,true,false,false,false,true,false,false,false,false],[true,false,true,true,true,false,true,false,false,true,true,true,false,true,false,false,false,false,true,false,true,false,false,false,true,true,true,true,true,true,false,false,true],[true,false,true,true,true,false,true,false,true,false,false,true,true,true,false,true,true,true,true,true,false,false,true,true,false,false,true,false,true,true,true,true,false],[true,false,true,true,true,false,true,false,false,false,true,true,true,true,false,true,true,false,true,true,true,false,true,false,true,false,false,false,true,false,true,false,true],[true,false,false,false,false,false,true,false,false,false,true,false,true,false,false,false,false,true,true,true,true,true,false,true,true,true,false,false,false,true,false,false,false],[true,true,true,true,true,true,true,false,true,false,false,false,false,false,false,true,false,false,false,true,false,true,true,false,true,false,false,false,true,true,false,true,false]],cell=7,qx=70,qy=895;
+    g.fillStyle='#ffffff';g.fillRect(qx-28,qy-28,(qr.length+8)*cell,(qr.length+8)*cell);
+    g.fillStyle='#143c49';qr.forEach((row,y)=>row.forEach((v,x)=>{if(v)g.fillRect(qx+x*cell,qy+y*cell,cell,cell)}));
+    g.font='bold 36px Arial';g.fillText('ТВОЙ РЕЙС ГОТОВ К ВЗЛЁТУ',400,955);g.font='29px Arial';g.fillText('Сканируй QR и лети за угощениями.',400,1010);g.fillText('Четыре страны. Один отпускной вайб.',400,1055);
+    g.font='23px Arial';g.fillText('naturally-sensitive-bluegill.tilda.ws',70,1245);g.fillText('Греция → Франция → Испания → Турция',70,1290);
+    return c;
+  }
+  $('bf-share').addEventListener('click',async()=>{
+    if(shareBusy||state!=='over')return;
+    shareBusy=true;$('bf-share').disabled=true;
+    try{
+      var blob=await new Promise(resolve=>ticketCanvas().toBlob(resolve,'image/png'));
+      if(!blob)throw new Error('Изображение не готово');
+      var file=typeof File==='function'?new File([blob],'BSHUSHU-flight.png',{type:'image/png'}):null;
+      if(file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]}))await navigator.share({files:[file],title:'Мой полёт BSHUSHU'});
+      else{var url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='BSHUSHU-flight.png';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)}
+    }catch(e){if(e.name!=='AbortError')$('bf-status').textContent='Не удалось сохранить талон. Попробуй ещё раз.'}
+    finally{shareBusy=false;$('bf-share').disabled=false}
+  });
+  var guideMode='practice';
+  function openGuide(mode){
+    if(startBusy||state==='playing'||state==='paused')return;
+    if(mode==='official'&&pendingResult){$('bf-status').textContent='Сначала отправим предыдущий зачётный результат.';submitResult();return}
+    guideMode=mode;
+    $('bf-guide-note').textContent=mode==='official'?'После инструкции — регистрация. Попытка начнётся только после нажатия «Взлететь».':'Сейчас тренировочный полёт — он не расходует недельную попытку.';
+    $('bf-guide-go').textContent=mode==='official'?'ПОНЯТНО, К РЕГИСТРАЦИИ →':'ПОНЯТНО, ВЗЛЕТАЕМ →';
+    $('bf-guide').classList.remove('hidden');
+  }
+  $('bf-start').addEventListener('click',()=>openGuide('practice'));
+  $('bf-official').addEventListener('click',()=>openGuide('official'));
+  $('bf-guide-back').addEventListener('click',()=>$('bf-guide').classList.add('hidden'));
+  var guideTouchY=null,guideCard=$('bf-guide').querySelector('.bf-card');
+  guideCard.addEventListener('touchstart',e=>{if(e.touches.length===1)guideTouchY=e.touches[0].clientY},{passive:true});
+  guideCard.addEventListener('touchmove',e=>{if(guideTouchY===null||e.touches.length!==1)return;var y=e.touches[0].clientY;guideCard.scrollTop+=guideTouchY-y;guideTouchY=y;e.preventDefault()},{passive:false});
+  guideCard.addEventListener('touchend',()=>guideTouchY=null);
+  guideCard.addEventListener('touchcancel',()=>guideTouchY=null);
+  $('bf-guide-go').addEventListener('click',()=>{
+    $('bf-guide').classList.add('hidden');
+    if(guideMode==='official'){$('bf-register').classList.remove('hidden');$('bf-form-error').textContent=''}
+    else start(null);
+  });
+  $('bf-register-back').addEventListener('click',()=>$('bf-register').classList.add('hidden'));
+  $('bf-board-open').addEventListener('click',()=>board(true));
+  $('bf-board-close').addEventListener('click',()=>$('bf-board-panel').classList.add('hidden'));
+  $('bf-retry').addEventListener('click',submitResult);
+  $('bf-go').addEventListener('click',async()=>{
+    if(startBusy||state==='playing'||state==='paused')return;
+    if(pendingResult){$('bf-form-error').textContent='Сначала отправьте предыдущий результат.';return}
+    var name=$('bf-name').value.trim(),phone=$('bf-phone').value.replace(/\D/g,'');
+    if(phone.length===10)phone='7'+phone;if(phone.length===11&&phone[0]==='8')phone='7'+phone.slice(1);
+    if(name.length<2){$('bf-form-error').textContent='Введите имя или ник';return}
+    if(!/^7[0-9]{10}$/.test(phone)){$('bf-form-error').textContent='Введите российский номер телефона';return}
+    if(!$('bf-consent').checked){$('bf-form-error').textContent='Нужно согласие на участие';return}
+    startBusy=true;$('bf-go').disabled=true;$('bf-register-back').disabled=true;$('bf-form-error').textContent='Готовим посадочный талон…';
+    try{var run=await api({action:'start',name:name,phone:phone,consent:true});start(run)}
+    catch(e){$('bf-form-error').textContent=e.message}
+    finally{startBusy=false;$('bf-go').disabled=false;$('bf-register-back').disabled=false}
+  });
+  var gameSurface=mount.querySelector('.bf-game');
+  gameSurface.addEventListener('pointerdown',e=>{
+    if(state==='playing' && e.target.closest && !e.target.closest('.bf-panel') && !e.target.closest('.bf-finished .bf-overlay .bf-card'))e.preventDefault();
+  },{capture:true});
+  canvas.addEventListener('pointerdown',e=>{
+    if(state==='playing'){
+      e.preventDefault();pressed=true;
+      try{canvas.setPointerCapture(e.pointerId)}catch(_){}
+    }
+  });
+  canvas.addEventListener('touchstart',e=>{
+    if(state==='playing'){e.preventDefault();pressed=true}
+  },{passive:false});
+  canvas.addEventListener('touchend',e=>{if(state==='playing'){e.preventDefault();pressed=false}},{passive:false});
+  canvas.addEventListener('touchcancel',()=>pressed=false);
+  mount.addEventListener('contextmenu',e=>e.preventDefault());
+  mount.addEventListener('selectstart',e=>{
+    if(!e.target.closest || !e.target.closest('.bf-field input'))e.preventDefault();
+  });
+  window.addEventListener('pointerup',()=>pressed=false);
+  window.addEventListener('pointercancel',()=>pressed=false);
+  window.addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();pressed=true}});
+  window.addEventListener('keyup',e=>{if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();pressed=false}});
+  function pauseFlight(){
+    if(state!=='playing')return;
+    state='paused';pressed=false;cancelAnimationFrame(rafId);accumulator=0;
+    $('bf-pause').classList.remove('hidden');
+  }
+  $('bf-resume').addEventListener('click',()=>{
+    if(state!=='paused'||document.hidden)return;
+    $('bf-pause').classList.add('hidden');state='playing';pressed=false;accumulator=0;last=performance.now();rafId=requestAnimationFrame(frame);
+  });
+  document.addEventListener('visibilitychange',()=>{pressed=false;if(document.hidden)pauseFlight();else if(pendingResult)submitResult()});
+  window.addEventListener('pagehide',()=>{pauseFlight();rememberPending()});
+  window.addEventListener('online',()=>{retryDelay=3000;submitResult();board(false)});
+  function tick(){
+    if(officialRun&&pressed!==lastInput){inputs.push({frame:flight.state.frame,held:pressed});lastInput=pressed}
+    var events=flight.step(pressed),model=flight.state;
+    elapsed=model.frame/60;km=model.km;miles=model.miles;boost=model.boost;stage=model.stage;
+    plane=model.plane;items=model.items;tutorialHud();
+    $('bf-safe').classList.toggle('hidden',elapsed>=5);
+    if(elapsed<5){var count=String(Math.ceil(5-elapsed));if($('bf-countdown').textContent!==count)$('bf-countdown').textContent=count;}
+    fade=Math.max(0,fade-1/60);
+    lightnings.forEach(l=>l.life-=1/60);lightnings=lightnings.filter(l=>l.life>0);
+    particles.forEach(p=>{p.life-=1/60;p.x+=p.vx/60;p.y+=p.vy/60;p.vy+=28/60;p.rot+=p.spin/60});
+    particles=particles.filter(p=>p.life>0);
+    cameraShake=Math.max(0,cameraShake-1/60);
+    events.forEach(e=>{
+      if(['bonus','combo','hit','storm','nearMiss','heart'].includes(e.type)&&!(e.type==='bonus'&&events.some(x=>x.type==='combo')))playSound(e.type);
+      if(e.type==='stage'){oldStage=e.previous;fade=2.4;savePassport();showStory();toast('✈ '+names[e.stage]+' · скорость +'+[0,30,60,90][e.stage]+'% · препятствий больше')}
+      if(e.type==='hit'){comboAwardUntil=0;cameraShake=.28;toast(e.lives?'Осталось жизней: '+e.lives:'Последняя посадка')}
+      if(e.type==='heart'){
+        toast('❤️ Дополнительная жизнь · снова '+e.lives+'/3');
+        for(var hi=0;hi<(liteMode?9:18);hi++){
+          var ha=Math.PI*2*hi/18+Math.random()*.25, hs=42+Math.random()*75;
+          particles.push({x:plane.x+18,y:plane.y,vx:Math.cos(ha)*hs,vy:Math.sin(ha)*hs-22,life:.55+Math.random()*.35,max:.9,rot:Math.random()*6.28,spin:(Math.random()-.5)*9,size:3+Math.random()*4,heart:true});
+        }
+      }
+      if(e.type==='bonus'){
+        if(!events.some(event=>event.type==='combo'))toast(e.kind==='wine'?'🍾 Навеселе! Покачивание и ускорение · 5 сек.':'✦ Угощение · +10 миль');
+        for(var pi=0;pi<(liteMode?6:12);pi++){
+          var a=Math.PI*2*pi/12+Math.random()*.35;
+          var sp=35+Math.random()*65;
+          particles.push({x:plane.x+18,y:plane.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-18,life:.45+Math.random()*.35,max:.8,rot:Math.random()*6.28,spin:(Math.random()-.5)*8,size:2.5+Math.random()*3.5});
+        }
+      }
+      if(e.type==='nearMiss')nearMissUntil=elapsed+1.3;
+      if(e.type==='combo'){comboAwardUntil=elapsed+2.2;toast('✦ Вкусная серия 3/3 · +20 дополнительных миль!')}
+      if(e.type==='stormWarn')toast('⚡ МОЛНИЯ ПОД ТУЧКОЙ — УХОДИ В СТОРОНУ!');
+      if(e.type==='storm'){
+        // Visible bolt starts exactly at the centre/bottom of THIS cloud.
+        lightnings.push({
+          cloud:e.cloud,
+          targetY:H+18,
+          life:.38,
+          bend:0
+        });
+      }
+    });
+    if(elapsed>=nextStory)showStory();
+    if(elapsed>=hideStory)$('bf-story').classList.remove('show');
+    if(elapsed>toastTime)$('bf-toast').classList.remove('show');
+    if(model.frame%6===0||model.ended||events.length)hud();
+    if(model.ended)finish();
+  }
+  function photo(i,progress){
+    var b=backgrounds[i];
+    if(!b||!b.canvas)return false;
+    var p=Math.min(1,Math.max(0,progress));
+    // Camera flies through the photo from right to left.
+    // A small vertical drift makes the landscape feel alive,
+    // while keeping the UI and airplane perfectly stable.
+    var maxX=Math.max(0,b.width-W);
+    var maxY=Math.max(0,(b.height||H)-H);
+    var x=Math.round(maxX*p);
+    var y=Math.round(maxY*(0.18+0.64*p));
+    ctx.drawImage(b.canvas,x,y,W,H,0,0,W,H);
+    return true;
+  }
+  function ease(t){
+    t=Math.max(0,Math.min(1,t));
+    return t*t*(3-2*t);
+  }
+  function panPosition(i,progress){
+    // One continuous cinematic camera movement in every country.
+    return ease(Math.max(0,Math.min(1,progress)));
+  }
+  function backdrop(){
+    ctx.fillStyle='#8acbee';ctx.fillRect(0,0,W,H);
+    if(panorama.canvas){
+      // Camera moves continuously across Greece, France, Spain and Turkey.
+      // No replacement, opacity animation or country seam.
+      var routeProgress=Math.max(0,Math.min(1,km/(STAGE*4)));
+      var scrollX=(panorama.width-W)*routeProgress;
+      ctx.drawImage(panorama.canvas,scrollX,0,W,H,0,0,W,H);
+      return;
+    }
+    var progress=(km-stage*STAGE)/STAGE;
+    if(fade>0&&oldStage>=0&&backgrounds[oldStage].canvas){
+      photo(oldStage,1);
+      if(backgrounds[stage].canvas){
+        ctx.save();
+        ctx.globalAlpha=1-fade/2.4;
+        photo(stage,panPosition(stage,progress));
+        ctx.restore();
+      }
+    }else if(!photo(stage,panPosition(stage,progress))&&oldStage>=0){
+      photo(oldStage,1);
+    }
+  }
+  // Decorative atmospheric parallax. Visual only: no physics/hitboxes are changed.
+  function drawAtmosphere(){
+    if(state!=='playing'||liteMode)return;
+    var activeStage=(flight&&flight.state)?flight.state.stage:stage;
+    var speedMul=[1,1.30,1.60,1.90][activeStage]||1;
+
+    ctx.save();
+    ctx.globalCompositeOperation='source-over';
+
+    // Distant haze: very slow, almost transparent layers.
+    for(var i=0;i<5;i++){
+      var span=W+210;
+      var x=((i*137 - elapsed*(7.5+activeStage*1.2))%span+span)%span-105;
+      var y=125+i*78+Math.sin(elapsed*.22+i*1.7)*8;
+      var rx=58+(i%3)*19, ry=12+(i%2)*5;
+      ctx.drawImage(hazeSprite,x-rx,y-ry,rx*2,ry*2);
+    }
+
+    // Near-air wisps: faster than the distant haze to create depth.
+    for(var j=0;j<4;j++){
+      var span2=W+260;
+      var x2=((j*181 - elapsed*(19+speedMul*7))%span2+span2)%span2-130;
+      var y2=190+j*103+Math.sin(elapsed*.48+j*2.1)*12;
+      ctx.globalAlpha=.07;
+      ctx.strokeStyle='#fff8e9';
+      ctx.lineWidth=1.3+(j%2)*.5;
+      ctx.beginPath();
+      ctx.moveTo(x2-34,y2);
+      ctx.bezierCurveTo(x2-12,y2-7,x2+14,y2+7,x2+43,y2-1);
+      ctx.stroke();
+    }
+
+    // Fine air streaks. They become slightly more noticeable in faster countries.
+    ctx.globalAlpha=.035+.012*activeStage;
+    ctx.strokeStyle='#fffdf4';
+    ctx.lineWidth=1;
+    for(var k=0;k<7;k++){
+      var span3=W+160;
+      var x3=((k*83 - elapsed*(38+speedMul*18))%span3+span3)%span3-80;
+      var y3=105+(k*71)%430;
+      var len=16+(k%3)*9;
+      ctx.beginPath();ctx.moveTo(x3,y3);ctx.lineTo(x3+len,y3-1.5);ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawStormWarnings(){
+    ctx.save();
+    ctx.setLineDash([5,7]);ctx.lineWidth=1.5;
+    items.forEach(function(o){
+      if(o.kind!=='storm'||o.lightningTimer<0)return;
+      var y=o.y+o.h*.18,end=y+(H+18-y)*.2;
+      var pulse=.35+.45*Math.abs(Math.sin(elapsed*22));
+      ctx.strokeStyle='rgba(255,235,135,'+pulse+')';
+      ctx.beginPath();ctx.moveTo(o.x,y);ctx.lineTo(o.x,end);ctx.stroke();
+      ctx.fillStyle='rgba(255,244,185,'+pulse*.4+')';
+      ctx.beginPath();ctx.ellipse(o.x,o.y,o.w*.55,o.h*.4,0,0,Math.PI*2);ctx.fill();
+    });
+    ctx.restore();
+  }
+  function drawLightning(){
+    if(!lightnings.length)return;
+    ctx.save();
+    var flash=Math.max(...lightnings.map(l=>Math.max(0,(l.life-.24)/.10)))*.16;
+    if(flash>0){ctx.fillStyle='rgba(255,255,240,'+flash+')';ctx.fillRect(0,0,W,H)}
+    lightnings.forEach(l=>{
+      var opacity=Math.min(1,l.life/.12);
+      var x=l.cloud?l.cloud.x:l.x;
+      var y=l.cloud?(l.cloud.y+l.cloud.h*.18):l.cloudY;
+      var endY=y+(l.targetY-y)*.2,b=l.bend;
+      var h=endY-y;
+      ctx.globalAlpha=opacity;
+      ctx.lineJoin='round';ctx.lineCap='round';
+      ctx.beginPath();
+      ctx.moveTo(x+4,y);
+      ctx.lineTo(x-9+b,y+h*.28);
+      ctx.lineTo(x+8+b,y+h*.43);
+      ctx.lineTo(x-12,y+h*.66);
+      ctx.lineTo(x+3,y+h*.78);
+      ctx.lineTo(x,endY);
+      ctx.strokeStyle='#ffdc68';ctx.lineWidth=7;ctx.stroke();
+      ctx.strokeStyle='#fffbe8';ctx.lineWidth=2.5;ctx.stroke();
+    });
+    ctx.restore();
+  }
+  function draw(){
+    ctx.save();
+    if(cameraShake>0){
+      var shakePower=5*(cameraShake/.28);
+      ctx.translate(Math.sin(elapsed*73)*shakePower,Math.cos(elapsed*61)*shakePower*.65);
+    }
+    backdrop();
+    drawAtmosphere();
+    drawStormWarnings();
+    drawLightning();
+    items.forEach(o=>{
+      var expectedFood=['olive','burger','paella','kebab'][stage];
+      if(['olive','burger','paella','kebab'].includes(o.kind)&&o.kind!==expectedFood)return;
+      var bonusPhase=elapsed*1.8+o.seed*.35;
+      var bob=o.kind==='wine'?Math.sin(bonusPhase)*2.5:o.kind==='olive'?Math.sin(bonusPhase)*4:o.kind==='burger'?Math.sin(bonusPhase)*3.5:Math.sin(o.seed*.72)*2.2;
+      var y=o.y+(o.kind==='bird'?Math.sin(o.seed)*6:bob);
+      var spr=sprites[o.kind];
+      if(o.kind==='heart'){
+        ctx.save();ctx.translate(o.x,y);
+        var hp=1+Math.sin(elapsed*5.2+o.seed)*.09;ctx.scale(hp,hp);
+        ctx.shadowColor='rgba(220,55,70,.55)';ctx.shadowBlur=13;
+        ctx.font='30px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('❤️',0,0);
+        ctx.restore();
+      }else if(spr){
+        ctx.save();
+        ctx.translate(o.x,y);
+        if(o.kind==='bird'){
+          // CLEAN SEAGULL: draw the original sprite exactly as supplied.
+          // No extra wings, no slicing, no deformation, no scaling or rotation.
+          ctx.drawImage(spr,-o.w/2,-o.h/2,o.w,o.h);
+        }else if(o.kind==='storm'){
+          // Cloud breathes and drifts slightly without moving its collision model.
+          var cloudPulse=1+Math.sin(elapsed*2.2+o.seed)*.025;
+          ctx.scale(cloudPulse,1/cloudPulse*.995+0.005);
+          ctx.drawImage(spr,-o.w/2,-o.h/2,o.w,o.h);
+        }else{
+          // Soft individual motion: wine stays upright; food gently floats.
+          var sway=o.kind==='wine'?.035:o.kind==='olive'?.055:.08;
+          var bonusRot=Math.sin(bonusPhase*.9)*sway;
+          var bonusScale=1+Math.sin(bonusPhase*.8)*.015;
+          ctx.rotate(bonusRot);ctx.scale(bonusScale,bonusScale);
+          ctx.drawImage(spr,-o.w/2,-o.h/2,o.w,o.h);
+        }
+        ctx.restore();
+      }else{
+        ctx.font='35px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(({bird:'🐦',storm:'⛈️',wine:'🍾',olive:'🫒',burger:'🍔',paella:'🥘',kebab:'🥙',heart:'❤️'})[o.kind],o.x,y);
+      }
+    });
+    if(elapsed<nearMissUntil){
+      ctx.save();ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillStyle='#143c49';
+      ctx.strokeStyle='#fff9e9';ctx.lineWidth=4;
+      var nearY=plane.y-48-(1.3-(nearMissUntil-elapsed))*12;
+      ctx.strokeText('Почти увернулся! +5 миль',plane.x,nearY);ctx.fillText('Почти увернулся! +5 миль',plane.x,nearY);ctx.restore();
+    }
+    // Spark burst when a collectible is picked up.
+    particles.forEach(p=>{
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+      ctx.globalAlpha=Math.max(0,Math.min(1,p.life/.28));
+      if(p.heart){ctx.font=(8+p.size*2)+'px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('♥',0,0)}else{ctx.fillStyle='#fff4cf';ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);}
+      ctx.restore();
+    });
+    // Subtle upper-air warning: appears only when the aircraft hugs the ceiling.
+    if(flight&&flight.state.plane.y<150){
+      ctx.save();
+      var dangerAlpha=Math.max(0,Math.min(.20,(150-flight.state.plane.y)/180));
+      ctx.globalAlpha=dangerAlpha;
+      var upperGrad=ctx.createLinearGradient(0,72,0,155);
+      upperGrad.addColorStop(0,'#fff4d8');
+      upperGrad.addColorStop(1,'rgba(255,244,216,0)');
+      ctx.fillStyle=upperGrad;
+      ctx.fillRect(0,70,W,95);
+      ctx.restore();
+    }
+
+    ctx.save();
+    if(elapsed>=5&&flight&&flight.state.invulnerable>0&&Math.floor(elapsed*12)%2===0)ctx.globalAlpha=.35;
+
+    // Cinematic aircraft animation. Visual only: physics and hitbox stay unchanged.
+    var activeStage=(flight&&flight.state&&typeof flight.state.stage==='number')?flight.state.stage:0;
+    var speedAnim=[1,1.30,1.60,1.90][activeStage]||1;
+
+    // Fine engine vibration + slower turbulence.
+    var engineX=Math.sin(elapsed*(34+speedAnim*8))*(0.45+speedAnim*.18);
+    var engineY=Math.cos(elapsed*(29+speedAnim*7))*(0.30+speedAnim*.12);
+    var airBob=Math.sin(elapsed*2.65)*2.35 + Math.sin(elapsed*.93+1.2)*1.15;
+    var airSway=Math.sin(elapsed*1.55)*1.15;
+
+    // Smooth nose-up / nose-down reaction to vertical velocity.
+    var targetPitch=Math.max(-.34,Math.min(.31,plane.v/390));
+    var wineSway=flight?(flight.state.tipsy||0):0;
+    var pitch=targetPitch + Math.sin(elapsed*1.85)*.015 + wineSway*Math.sin(elapsed*3.6)*.24;
+
+    // Tiny breathing zoom gives the impression of a camera following the aircraft.
+    var planeScale=(phoneLayout.matches?.68:.85)*(1 + Math.sin(elapsed*2.15)*.008);
+
+    ctx.translate(plane.x+engineX+airSway,plane.y+engineY+airBob);
+    ctx.rotate(pitch);
+    ctx.scale(planeScale,planeScale);
+
+    // Animated exhaust / airflow trail. It becomes slightly stronger at higher speed.
+    ctx.save();
+    for(var ex=0;ex<4;ex++){
+      var puff=(elapsed*(32+speedAnim*10)+ex*21)%68;
+      var fade=1-puff/68;
+      ctx.globalAlpha=.045+.10*fade;
+      ctx.beginPath();
+      ctx.ellipse(-108-puff,-1+Math.sin(elapsed*4.4+ex)*3.2,5+ex*1.3,2.2+ex*.65,0,0,Math.PI*2);
+      ctx.fillStyle='#f7f0df';
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // BSHUSHU aircraft body.
+    if(planeImage){
+      // Draw the aircraft body, but animate the banner area with a segmented wind-wave.
+      // The source image is 1737x692. Banner occupies roughly its left 36%.
+      var sxCut=625, srcH=692;
+      var dx=-122, dy=-38, dw=190, dh=76;
+      var bannerW=dw*(sxCut/1737);
+
+      // Cached, display-size aircraft and banner. Original artwork is retained.
+      ctx.drawImage(planeBody,dx+bannerW,dy,dw-bannerW,dh);
+      var strips=liteMode?6:12;
+      var srcStrip=planeBanner.width/strips;
+      var dstStrip=bannerW/strips;
+      var windSpeed=7.5+speedAnim*2.4;
+      var waveAmp=1.8+speedAnim*.65;
+      for(var fs=0;fs<strips;fs++){
+        var freedom=1-fs/(strips-1);
+        var wave=Math.sin(elapsed*windSpeed-fs*.62)*waveAmp*freedom;
+        var wave2=Math.sin(elapsed*(windSpeed*.55)-fs*.34)*.7*freedom;
+        ctx.drawImage(planeBanner,fs*srcStrip,0,srcStrip+.3,76,
+          dx+fs*dstStrip,dy+wave+wave2,dstStrip+.5,dh);
+      }
+    }else{
+      ctx.font='55px Arial';ctx.fillText('✈',-25,12)
+    }
+
+    // Clean procedural 3-blade propeller — no white PNG disc.
+    // It stays attached to the nose because it is drawn inside the aircraft transform.
+    ctx.save();
+    ctx.translate(66,-1);
+    var propAngle=elapsed*(31+speedAnim*16);
+    ctx.rotate(propAngle);
+
+    // subtle fast-rotation halo
+    ctx.save();
+    ctx.globalAlpha=.10;
+    ctx.strokeStyle='#d9d1bd';
+    ctx.lineWidth=1.2;
+    ctx.beginPath();
+    ctx.arc(0,0,13.5,0,Math.PI*2);
+    ctx.stroke();
+    ctx.restore();
+
+    // three slim blades
+    for(var pb=0;pb<3;pb++){
+      ctx.save();
+      ctx.rotate(pb*Math.PI*2/3);
+      var grad=ctx.createLinearGradient(0,0,0,-17);
+      grad.addColorStop(0,'#81775f');
+      grad.addColorStop(.38,'#d8d0bd');
+      grad.addColorStop(.82,'#f1ead9');
+      grad.addColorStop(1,'#bda45f');
+      ctx.fillStyle=grad;
+      ctx.beginPath();
+      ctx.moveTo(-1.8,-2);
+      ctx.quadraticCurveTo(-2.8,-8,-1.3,-15);
+      ctx.quadraticCurveTo(1.0,-16,1.9,-13.5);
+      ctx.quadraticCurveTo(2.7,-7,1.5,-2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // green spinner / hub
+    var hub=ctx.createRadialGradient(-1,-1,1,0,0,5.4);
+    hub.addColorStop(0,'#f5ead1');
+    hub.addColorStop(.25,'#b8aa88');
+    hub.addColorStop(.48,'#1f5b3c');
+    hub.addColorStop(1,'#0b3325');
+    ctx.fillStyle=hub;
+    ctx.beginPath();
+    ctx.arc(0,0,4.5,0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+
+    // Propeller is generated by code above.
+
+    // BSHUSHU banner is integrated into the new plane PNG.
+
+
+    ctx.restore();
+    ctx.restore(); // camera shake wrapper
+  }
+  function frame(now){
+    if(state!=='playing')return;
+    var frameMs=now-last;
+    if(!document.hidden&&elapsed>2&&frameMs>0&&frameMs<120&&!liteMode){
+      perfTotal+=frameMs;perfFrames++;if(frameMs>25)slowFrames++;
+      if(perfFrames>=120){
+        if(perfTotal/perfFrames>24&&slowFrames>60){liteMode=true;renderScale=Math.min(renderScale,1);gameSurface.classList.add('bf-lite');fit()}
+        perfTotal=0;perfFrames=0;slowFrames=0;
+      }
+    }
+    accumulator+=Math.min(.10,Math.max(0,frameMs/1000||0));last=now;
+    while(accumulator>=1/60&&state==='playing'){tick();accumulator-=1/60}
+    draw();if(state==='playing')rafId=requestAnimationFrame(frame);
+  }
+  try{pendingResult=JSON.parse(localStorage.getItem('bshushu_pending_flight')||sessionStorage.getItem('bshushu_pending_flight')||'null')}catch(e){}
+  if(pendingResult&&(!pendingResult.token||pendingResult.action!=='save'||!Array.isArray(pendingResult.inputs))){pendingResult=null;rememberPending()}
+  if(pendingResult){$('bf-retry').classList.remove('hidden');$('bf-status').textContent='Есть зачётный полёт, который можно повторно отправить в рейтинг.'}
+  soundButton();passportView();fit();hud();draw();board(false);if(pendingResult)submitResult();
+  window.addEventListener('resize',()=>{fit();if(state!=='playing')draw()});
+})();
+</script>
+
+<script>
+(function(){
+  function lockBshushuPage(){
+    document.documentElement.classList.add('bshushu-flight-lock');
+    document.body.classList.add('bshushu-flight-lock');
+    try{ window.scrollTo(0,0); }catch(e){}
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', lockBshushuPage, {once:true});
+  }else{
+    lockBshushuPage();
+  }
+
+  /* Prevent Tilda/page scroll and iOS rubber-band while interacting with the game. */
+  ['touchmove','wheel'].forEach(function(type){
+    document.addEventListener(type,function(e){
+      if(e.target && e.target.closest && e.target.closest('#bshFlightMount') && !e.target.closest('.bf-panel') && !e.target.closest('.bf-finished .bf-overlay .bf-card')){
+        e.preventDefault();
+      }
+    },{passive:false});
+  });
+
+  /* Keep viewport pinned after browser chrome/orientation changes. */
+  window.addEventListener('resize',function(){
+    try{ window.scrollTo(0,0); }catch(e){}
+  });
+  window.addEventListener('orientationchange',function(){
+    setTimeout(function(){
+      try{ window.scrollTo(0,0); }catch(e){}
+    },120);
+  });
+})();
+</script>
+</body>
+</html>
