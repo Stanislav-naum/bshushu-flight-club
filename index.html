@@ -1662,47 +1662,6 @@ function createFlight(seed,heartEnabled){
       photo(i,(Math.max(0,km)%STAGE)/STAGE);
     }
     ctx.restore();
-    // R45: clearly visible animated sea sheen and rolling ripples.
-    // Kept in the lower sea band so landscape and static boats remain untouched.
-    if(panorama.canvas){
-      ctx.save();
-      var seaTop=H*.69, seaHeight=H-seaTop;
-      ctx.beginPath();ctx.rect(0,seaTop,W,seaHeight);ctx.clip();
-      var gleamX=W*(.47+.10*Math.sin(elapsed*.22));
-      var shine=ctx.createLinearGradient(gleamX-95,0,gleamX+95,0);
-      shine.addColorStop(0,'rgba(255,248,203,0)');
-      shine.addColorStop(.5,'rgba(255,248,203,.18)');
-      shine.addColorStop(1,'rgba(255,248,203,0)');
-      ctx.fillStyle=shine;ctx.fillRect(0,seaTop,W,seaHeight);
-      for(var si=0;si<68;si++){
-        var depth=(si%11)/10;
-        var sy=seaTop+9+depth*(seaHeight-19)+Math.sin(si*1.87+elapsed*.48)*3;
-        var sx=((si*71.7+elapsed*(9+depth*19))%(W+100)+W+100)%(W+100)-45;
-        var pulse=.55+.45*Math.sin(elapsed*1.9+si*1.61);
-        var len=12+depth*27+8*pulse;
-        ctx.globalAlpha=(.13+.30*pulse)*(1-depth*.24);
-        ctx.strokeStyle=(si%4===0)?'#fff2b5':'#f6ffff';
-        ctx.lineWidth=.95+depth*1.25;
-        ctx.beginPath();ctx.moveTo(sx,sy);
-        ctx.quadraticCurveTo(sx+len*.5,sy-2.2-depth*1.5,sx+len,sy+.35);
-        ctx.stroke();
-      }
-      // A few longer, slow wave crests make motion legible on small screens.
-      for(var wi=0;wi<8;wi++){
-        var wy=seaTop+seaHeight*(.13+wi*.108);
-        var offset=Math.sin(elapsed*.85+wi*1.6)*19;
-        ctx.globalAlpha=.15+.07*Math.sin(elapsed*.9+wi);
-        ctx.strokeStyle='#f7ffff';ctx.lineWidth=1.5;
-        ctx.beginPath();
-        for(var wx=-30;wx<=W+30;wx+=5){
-          var yy=wy+Math.sin(wx*.022+elapsed*.8+wi)*2.6;
-          if(wx===-30)ctx.moveTo(wx+offset,yy);
-          else ctx.lineTo(wx+offset,yy);
-        }
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
     // Distant moving cloud layer for depth and a visible sensation of flight.
     ctx.save();ctx.globalAlpha=.13;
     for(var j=0;j<4;j++){
