@@ -11,7 +11,7 @@
   <div class="bf-game">
     <canvas id="bf-canvas" aria-label="Игра BSHUSHU Flight Club"></canvas>
     <div class="bf-top">
-      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R43</small></div>
+      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R46 — VERCEL</small></div>
       <div class="bf-score"><small>ДИСТАНЦИЯ</small><strong id="bf-km">0</strong> км<small id="bf-miles">✦ 0 миль</small><small id="bf-combo">Вкусная серия: 0/3</small><small id="bf-lives">♥ ♥ ♥</small></div>
     </div>
     <button id="bf-sound" class="bf-sound" type="button" aria-label="Включить звук" aria-pressed="false">Звук: выкл.</button>
@@ -943,6 +943,19 @@ body.bshushu-flight-lock #bshFlightMount .bf-game{
 #bshFlightMount .bf-safe b{display:block;font-size:52px;line-height:1.1}
 #bshFlightMount .bf-safe.hidden,#bshFlightMount .bf-wine.hidden{display:none}
 #bshFlightMount .bf-wine{position:absolute;z-index:3;left:16px;top:111px;padding:6px 10px;border-radius:16px;background:#f4ede0e6;color:#143c49;font-size:11px;font-weight:bold;pointer-events:none}
+
+/* R46: responsive standalone Vercel layout; preserve game logic and artwork. */
+html,body{margin:0;min-height:100%;background:#f4ede0}
+#bshFlightMount{min-height:100vh;min-height:100dvh;padding:20px;align-items:center}
+#bshFlightMount .bf-game{width:min(100%,480px);height:min(860px,calc(100dvh - 40px));min-height:0;aspect-ratio:390/700;margin:auto}
+@media(max-width:600px){
+ #bshFlightMount{min-height:100dvh;padding:0;align-items:flex-start}
+ #bshFlightMount .bf-game{width:min(100%,calc(100dvh * 390 / 700));height:auto;min-height:0;aspect-ratio:390/700;border-radius:0;margin:0 auto}
+}
+@media(min-width:601px) and (max-height:720px){
+ #bshFlightMount{padding:8px}
+ #bshFlightMount .bf-game{height:calc(100dvh - 16px);width:min(480px,calc((100dvh - 16px)*390/700))}
+}
 </style>
 <script>
 (function(){
