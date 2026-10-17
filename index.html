@@ -11,7 +11,7 @@
   <div class="bf-game">
     <canvas id="bf-canvas" aria-label="Игра BSHUSHU Flight Club"></canvas>
     <div class="bf-top">
-      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R51 — FLAPPING SEAGULL</small></div>
+      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R52 — SEAGULL REBUILT</small></div>
       <div class="bf-score"><small>ДИСТАНЦИЯ</small><strong id="bf-km">0</strong> км<small id="bf-miles">✦ 0 миль</small><small id="bf-combo">Вкусная серия: 0/3</small><small id="bf-lives">♥ ♥ ♥</small></div>
     </div>
     <button id="bf-sound" class="bf-sound" type="button" aria-label="Включить звук" aria-pressed="false">Звук: выкл.</button>
@@ -1855,6 +1855,36 @@ function createFlight(seed,heartEnabled){
         ctx.fillText(({bird:'🐦',storm:'⛈️',wine:'🍾',olive:'🥗',burger:'🍔',paella:'🥘',kebab:'🥙',heart:'❤️'})[o.kind],o.x,y);
       }
     });
+    // R52: independent illustrated seagull. Drawn every frame during flight,
+    // not dependent on obstacle spawn, sprites, network or collision logic.
+    if(state==='playing'){
+      const t=elapsed;
+      const gx=310+34*Math.sin(t*.38), gy=215+32*Math.sin(t*.61);
+      const flap=Math.sin(t*8.4);
+      ctx.save();ctx.translate(gx,gy);ctx.scale(.92,.92);
+      ctx.shadowColor='rgba(16,39,57,.30)';ctx.shadowBlur=5;
+      ctx.lineJoin='round';ctx.lineCap='round';
+      // Rear wing, animated at the shoulder.
+      ctx.save();ctx.translate(3,-5);ctx.rotate(-.10-flap*.57);
+      ctx.fillStyle='#d7e4ea';ctx.strokeStyle='#496779';ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.moveTo(-8,4);ctx.bezierCurveTo(6,-12,24,-33,45,-39);
+      ctx.bezierCurveTo(32,-15,19,0,-3,11);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+      // Forked tail and streamlined body.
+      ctx.fillStyle='#f9faf6';ctx.strokeStyle='#4d6a7c';ctx.lineWidth=1.7;
+      ctx.beginPath();ctx.moveTo(-18,4);ctx.lineTo(-45,-7);ctx.lineTo(-36,7);
+      ctx.lineTo(-46,17);ctx.lineTo(-17,13);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.beginPath();ctx.ellipse(0,5,27,10,-.08,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.beginPath();ctx.arc(21,-2,9,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#f4b44d';ctx.beginPath();ctx.moveTo(28,-3);ctx.lineTo(45,1);
+      ctx.lineTo(28,4);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#263d4c';ctx.beginPath();ctx.arc(24,-5,2,0,Math.PI*2);ctx.fill();
+      // Front wing: large clear up/down flapping movement.
+      ctx.save();ctx.translate(-7,-1);ctx.rotate(.05+flap*.68);
+      ctx.fillStyle='#fffefa';ctx.strokeStyle='#506d80';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(0,7);ctx.bezierCurveTo(-9,-9,-25,-33,-45,-45);
+      ctx.bezierCurveTo(-39,-17,-31,1,-6,13);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.restore();ctx.restore();
+    }
     if(elapsed<nearMissUntil){
       ctx.save();ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillStyle='#143c49';
       ctx.strokeStyle='#fff9e9';ctx.lineWidth=4;
