@@ -11,7 +11,7 @@
   <div class="bf-game">
     <canvas id="bf-canvas" aria-label="Игра BSHUSHU Flight Club"></canvas>
     <div class="bf-top">
-      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R66 — LIVING AIRCRAFT</small></div>
+      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R67 — CINEMATIC SKIES</small></div>
       <div class="bf-score"><small>ДИСТАНЦИЯ</small><strong id="bf-km">0</strong> км<small id="bf-miles">✦ 0 миль</small><small id="bf-combo">Вкусная серия: 0/3</small><small id="bf-lives">♥ ♥ ♥</small></div>
     </div>
     <button id="bf-sound" class="bf-sound" type="button" aria-label="Включить звук" aria-pressed="false">Звук: выкл.</button>
@@ -1695,6 +1695,62 @@ function createFlight(seed,heartEnabled){
     }
     ctx.restore();
   }
+  // R67: cinematic lighting. Drawn over the scenery, under all game objects.
+  // No network assets or simulation changes; low-end phones use a lighter pass.
+  function drawSkyLighting(){
+    if(state!=='playing')return;
+    var country=(flight&&flight.state)?flight.state.stage:stage;
+    var intensity=[.16,.12,.21,.13][country]||.12;
+    ctx.save();
+    // Golden light enters from the upper-left, changing subtly by country.
+    var sx=country===2?W*.78:W*.17,sy=country===3?H*.22:H*.13;
+    var radius=liteMode?W*.65:W*.94;
+    var sun=ctx.createRadialGradient(sx,sy,0,sx,sy,radius);
+    sun.addColorStop(0,'rgba(255,238,184,'+intensity+')');
+    sun.addColorStop(.42,'rgba(255,230,187,'+(intensity*.38)+')');
+    sun.addColorStop(1,'rgba(255,230,187,0)');
+    ctx.fillStyle=sun;ctx.fillRect(0,0,W,H);
+    // A cooler, subtly darkened upper atmosphere during the final stage.
+    if(country===3){
+      var dusk=ctx.createLinearGradient(0,0,0,H*.78);
+      dusk.addColorStop(0,'rgba(34,53,83,.11)');
+      dusk.addColorStop(1,'rgba(34,53,83,0)');
+      ctx.fillStyle=dusk;ctx.fillRect(0,0,W,H*.78);
+    }
+    // The approach of an actual thundercloud dims its immediate surroundings.
+    if(!liteMode){
+      items.forEach(function(o){
+        if(o.kind!=='storm')return;
+        var rad=Math.max(65,o.w*2.1);
+        var sh=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,rad);
+        sh.addColorStop(0,'rgba(34,45,68,.13)');
+        sh.addColorStop(1,'rgba(34,45,68,0)');
+        ctx.fillStyle=sh;ctx.fillRect(o.x-rad,o.y-rad,rad*2,rad*2);
+      });
+    }
+    ctx.restore();
+  }
+  // R67: distant cloudbanks. Their parallax is tied to game time and stage,
+  // and they stay in the background behind real obstacles.
+  function drawCloudBanks(){
+    if(state!=='playing')return;
+    var country=(flight&&flight.state)?flight.state.stage:stage;
+    var drift=[7,10,13,16][country];
+    ctx.save();
+    for(var i=0;i<5;i++){
+      var span=W+260;
+      var x=((i*157-elapsed*drift*(1+(i%3)*.23))%span+span)%span-130;
+      var y=95+i*103+Math.sin(elapsed*.23+i*1.9)*5;
+      var width=100+(i%3)*32;
+      ctx.globalAlpha=liteMode?.12:.19+(i%2)*.035;
+      ctx.drawImage(hazeSprite,x-width*.5,y-18,width,36);
+      if(!liteMode){
+        ctx.globalAlpha=.065;
+        ctx.drawImage(hazeSprite,x-width*.45,y-11,width*.9,26);
+      }
+    }
+    ctx.restore();
+  }
   // Decorative atmospheric parallax. Visual only: no physics/hitboxes are changed.
   function drawAtmosphere(){
     if(state!=='playing'||liteMode)return;
@@ -1793,6 +1849,8 @@ function createFlight(seed,heartEnabled){
       ctx.translate(Math.sin(elapsed*73)*shakePower,Math.cos(elapsed*61)*shakePower*.65);
     }
     backdrop();
+    drawSkyLighting();
+    drawCloudBanks();
     drawAtmosphere();
     drawStormWarnings();
     drawLightning();
