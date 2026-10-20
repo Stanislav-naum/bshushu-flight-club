@@ -11,7 +11,7 @@
   <div class="bf-game">
     <canvas id="bf-canvas" aria-label="Игра BSHUSHU Flight Club"></canvas>
     <div class="bf-top">
-      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R62 — NATURAL GULL</small></div>
+      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R63 — LIVING SKIES</small></div>
       <div class="bf-score"><small>ДИСТАНЦИЯ</small><strong id="bf-km">0</strong> км<small id="bf-miles">✦ 0 миль</small><small id="bf-combo">Вкусная серия: 0/3</small><small id="bf-lives">♥ ♥ ♥</small></div>
     </div>
     <button id="bf-sound" class="bf-sound" type="button" aria-label="Включить звук" aria-pressed="false">Звук: выкл.</button>
@@ -1779,6 +1779,29 @@ function createFlight(seed,heartEnabled){
     });
     ctx.restore();
   }
+  // R63: ambient seagulls. Render-only wildlife, not obstacles:
+  // the server-validated deterministic flight physics and hitboxes stay identical.
+  function drawAmbientGulls(){
+    if(state!=='playing'||!gullFramesReady||!gullFrames.naturalWidth)return;
+    const fw=440,fh=320;
+    const period=4.2;
+    const t=elapsed;
+    // Staggered paths, varying depths, never cover the central plane corridor.
+    for(let i=0;i<4;i++){
+      const phase=(t+i*2.13)%period;
+      const x=W+70-phase*(W+160)/period;
+      const band=i%2===0?115:475;
+      const y=band+Math.sin(t*.83+i*2.7)*22;
+      const size=18+(i%3)*4;
+      const fr=Math.floor((t*9+i*4.3)%24);
+      ctx.save();
+      ctx.globalAlpha=.46+(i%2)*.16;
+      ctx.translate(x,y);
+      ctx.rotate(Math.sin(t*1.1+i)*.025);
+      ctx.drawImage(gullFrames,fr*fw,0,fw,fh,-size*.8,-size*.56,size*1.6,size*1.12);
+      ctx.restore();
+    }
+  }
   function draw(){
     ctx.save();
     if(cameraShake>0){
@@ -1787,6 +1810,7 @@ function createFlight(seed,heartEnabled){
     }
     backdrop();
     drawAtmosphere();
+    drawAmbientGulls();
     drawStormWarnings();
     drawLightning();
     items.forEach(o=>{
