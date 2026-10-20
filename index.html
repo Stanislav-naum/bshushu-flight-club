@@ -11,7 +11,7 @@
   <div class="bf-game">
     <canvas id="bf-canvas" aria-label="Игра BSHUSHU Flight Club"></canvas>
     <div class="bf-top">
-      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R64 — INTEGRATED FLIGHT</small></div>
+      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R65 — THUNDERSTORM</small></div>
       <div class="bf-score"><small>ДИСТАНЦИЯ</small><strong id="bf-km">0</strong> км<small id="bf-miles">✦ 0 миль</small><small id="bf-combo">Вкусная серия: 0/3</small><small id="bf-lives">♥ ♥ ♥</small></div>
     </div>
     <button id="bf-sound" class="bf-sound" type="button" aria-label="Включить звук" aria-pressed="false">Звук: выкл.</button>
@@ -1757,25 +1757,31 @@ function createFlight(seed,heartEnabled){
   function drawLightning(){
     if(!lightnings.length)return;
     ctx.save();
-    var flash=Math.max(...lightnings.map(l=>Math.max(0,(l.life-.24)/.10)))*.16;
-    if(flash>0){ctx.fillStyle='rgba(255,255,240,'+flash+')';ctx.fillRect(0,0,W,H)}
+    var flash=Math.max(...lightnings.map(l=>Math.max(0,(l.life-.24)/.10)))*.11;
+    if(flash>0){ctx.fillStyle='rgba(255,251,229,'+flash+')';ctx.fillRect(0,0,W,H)}
     lightnings.forEach(l=>{
-      var opacity=Math.min(1,l.life/.12);
+      var opacity=Math.min(1,l.life/.10);
       var x=l.cloud?l.cloud.x:l.x;
       var y=l.cloud?(l.cloud.y+l.cloud.h*.18):l.cloudY;
       var endY=y+(l.targetY-y)*.2,b=l.bend;
       var h=endY-y;
-      ctx.globalAlpha=opacity;
-      ctx.lineJoin='round';ctx.lineCap='round';
-      ctx.beginPath();
-      ctx.moveTo(x+4,y);
-      ctx.lineTo(x-9+b,y+h*.28);
-      ctx.lineTo(x+8+b,y+h*.43);
-      ctx.lineTo(x-12,y+h*.66);
-      ctx.lineTo(x+3,y+h*.78);
-      ctx.lineTo(x,endY);
-      ctx.strokeStyle='#ffdc68';ctx.lineWidth=7;ctx.stroke();
-      ctx.strokeStyle='#fffbe8';ctx.lineWidth=2.5;ctx.stroke();
+      ctx.save();ctx.globalAlpha=opacity;ctx.lineJoin='round';ctx.lineCap='round';
+      // One continuous bolt, attached to the cloud, with two fine branches.
+      ctx.beginPath();ctx.moveTo(x,y);
+      ctx.lineTo(x-7+b*.45,y+h*.22);
+      ctx.lineTo(x+6+b*.55,y+h*.39);
+      ctx.lineTo(x-10+b*.22,y+h*.61);
+      ctx.lineTo(x+3,y+h*.79);ctx.lineTo(x,endY);
+      ctx.shadowColor='#fceca5';ctx.shadowBlur=17;
+      ctx.strokeStyle='rgba(255,213,88,.72)';ctx.lineWidth=7;ctx.stroke();
+      ctx.shadowBlur=8;ctx.strokeStyle='#fff2a5';ctx.lineWidth=3.4;ctx.stroke();
+      ctx.shadowBlur=0;ctx.strokeStyle='#fffdf0';ctx.lineWidth=1.3;ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x+6+b*.55,y+h*.39);
+      ctx.lineTo(x+15+b*.3,y+h*.49);ctx.lineTo(x+10,y+h*.60);
+      ctx.moveTo(x-10+b*.22,y+h*.61);
+      ctx.lineTo(x-18,y+h*.70);ctx.lineTo(x-14,y+h*.76);
+      ctx.strokeStyle='rgba(255,246,192,.83)';ctx.lineWidth=1.35;ctx.stroke();
+      ctx.restore();
     });
     ctx.restore();
   }
@@ -1826,38 +1832,38 @@ function createFlight(seed,heartEnabled){
               o.w*1.52*birdScale,o.h*1.96*birdScale);
           }
         }else if(o.kind==='storm'){
-          // R43: volumetric storm cloud with animated inner glow and lightning.
-          var t=elapsed*2.4+o.seed, pulse=.5+.5*Math.sin(t*1.5);
-          var warn=o.lightningTimer>=0;
+          // R65: layered thunderhead with a timed, internal electrical charge.
+          // Pure rendering: lightning strike coordinates and damage remain unchanged.
+          var t=elapsed*1.6+o.seed, pulse=.5+.5*Math.sin(t*3.1);
+          var charging=o.lightningTimer>=0;
           var cw=o.w*.54, ch=o.h*.27;
-          ctx.translate(0,Math.sin(t)*1.4);
-          ctx.shadowColor='rgba(17,34,65,.40)';ctx.shadowBlur=12;ctx.shadowOffsetY=5;
-          var cg=ctx.createLinearGradient(0,-ch*1.7,0,ch*1.6);
-          cg.addColorStop(0,'#8796aa');cg.addColorStop(.42,'#56687f');cg.addColorStop(.8,'#303e58');cg.addColorStop(1,'#1c2941');
+          var charge=charging?(.40+.60*pulse):(.07+.08*pulse);
+          ctx.translate(0,Math.sin(t*.7)*.65);
+          ctx.save();
+          ctx.shadowColor='rgba(21,32,54,.35)';ctx.shadowBlur=10;ctx.shadowOffsetY=4;
+          var cg=ctx.createLinearGradient(0,-ch*1.7,0,ch*1.25);
+          cg.addColorStop(0,'#a8b4c3');cg.addColorStop(.30,'#74849b');
+          cg.addColorStop(.68,'#43516c');cg.addColorStop(1,'#25334c');
           ctx.fillStyle=cg;
           function puff(x,y,rx,ry){ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill()}
-          puff(-cw*.49,-ch*.06,cw*.43,ch*.91);
-          puff(-cw*.20,-ch*.48,cw*.42,ch*1.14);
-          puff(cw*.19,-ch*.62,cw*.46,ch*1.17);
-          puff(cw*.52,-ch*.10,cw*.43,ch*.88);
-          ctx.beginPath();ctx.ellipse(0,ch*.17,cw*.94,ch*.72,0,0,Math.PI*2);ctx.fill();
-          ctx.shadowBlur=0;ctx.shadowOffsetY=0;
-          ctx.strokeStyle='rgba(207,222,238,.48)';ctx.lineWidth=1.6;
-          ctx.beginPath();ctx.moveTo(-cw*.76,-ch*.37);
-          ctx.bezierCurveTo(-cw*.60,-ch*1.06,-cw*.38,-ch*1.02,-cw*.25,-ch*.90);
-          ctx.bezierCurveTo(-cw*.05,-ch*1.55,cw*.39,-ch*1.48,cw*.56,-ch*.66);ctx.stroke();
-          ctx.save();ctx.globalAlpha=.09+(warn?.18*pulse:.035*pulse);
-          ctx.fillStyle='#e9efff';ctx.beginPath();ctx.ellipse(0,ch*.34,cw*.73,ch*.30,0,0,Math.PI*2);ctx.fill();ctx.restore();
-          // A forked bolt is visible even before the warning; the pulse becomes stronger before discharge.
-          var boltAlpha=warn?.78+.22*pulse:.70+.12*pulse;
-          ctx.globalAlpha=boltAlpha;
-          ctx.shadowColor='#fff3a2';ctx.shadowBlur=warn?16+8*pulse:9;
-          ctx.fillStyle='#ffdb56';ctx.strokeStyle='#fff7cc';ctx.lineWidth=1.5;
-          ctx.beginPath();ctx.moveTo(-cw*.05,ch*.35);ctx.lineTo(cw*.18,ch*.35);
-          ctx.lineTo(-cw*.02,ch*1.12);ctx.lineTo(cw*.20,ch*1.12);
-          ctx.lineTo(-cw*.28,ch*2.06);ctx.lineTo(-cw*.10,ch*1.28);
-          ctx.lineTo(-cw*.33,ch*1.28);ctx.closePath();ctx.fill();ctx.stroke();
-          ctx.shadowBlur=0;ctx.globalAlpha=1;
+          puff(-cw*.55,-ch*.08,cw*.39,ch*.85);
+          puff(-cw*.27,-ch*.50,cw*.43,ch*1.15);
+          puff(cw*.12,-ch*.69,cw*.49,ch*1.22);
+          puff(cw*.51,-ch*.22,cw*.40,ch*.94);
+          puff(0,ch*.16,cw*.93,ch*.69);
+          ctx.restore();
+          // Highlight contours on the windward side.
+          ctx.save();ctx.strokeStyle='rgba(229,239,249,.38)';ctx.lineWidth=1.3;
+          ctx.beginPath();ctx.moveTo(-cw*.69,-ch*.35);
+          ctx.bezierCurveTo(-cw*.61,-ch*1.05,-cw*.35,-ch*1.10,-cw*.22,-ch*.93);
+          ctx.bezierCurveTo(-cw*.02,-ch*1.64,cw*.36,-ch*1.51,cw*.53,-ch*.69);ctx.stroke();
+          // Subtle lightning flicker *inside* the cloud before the actual strike.
+          ctx.globalAlpha=charge*.44;
+          var glow=ctx.createRadialGradient(0,ch*.05,0,0,ch*.05,cw*.85);
+          glow.addColorStop(0,'#f7f4c8');glow.addColorStop(.42,'#c4d6f4');glow.addColorStop(1,'rgba(142,165,216,0)');
+          ctx.fillStyle=glow;ctx.beginPath();ctx.ellipse(0,ch*.13,cw*.84,ch*.62,0,0,Math.PI*2);ctx.fill();
+          ctx.restore();
+          // The external bolt is drawn by drawLightning() only when triggered.
         }else{
           // Soft individual motion: wine stays upright; food gently floats.
           var sway=o.kind==='wine'?.035:o.kind==='olive'?.055:.08;
