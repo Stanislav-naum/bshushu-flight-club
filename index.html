@@ -11,7 +11,7 @@
   <div class="bf-game">
     <canvas id="bf-canvas" aria-label="Игра BSHUSHU Flight Club"></canvas>
     <div class="bf-top">
-      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R59 — NATURAL GULL</small></div>
+      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R61 — LIVING FLIGHT</small></div>
       <div class="bf-score"><small>ДИСТАНЦИЯ</small><strong id="bf-km">0</strong> км<small id="bf-miles">✦ 0 миль</small><small id="bf-combo">Вкусная серия: 0/3</small><small id="bf-lives">♥ ♥ ♥</small></div>
     </div>
     <button id="bf-sound" class="bf-sound" type="button" aria-label="Включить звук" aria-pressed="false">Звук: выкл.</button>
@@ -1811,9 +1811,18 @@ function createFlight(seed,heartEnabled){
         if(o.kind==='bird'){
           // Restored original R44 24-frame illustrated seagull, with real wingbeats.
           if(gullFramesReady && gullFrames.naturalWidth){
-            const fr=((Math.floor(elapsed*12+o.seed*2)%24)+24)%24;
+            // R61: individual birds alternate wingbeats and short, natural glides.
+            // Changes are visual only: obstacle position and collision stay intact.
+            const cycle=(elapsed*1.08+o.seed*.37)%5.8;
+            const gliding=cycle>3.7 && cycle<5.1;
+            const wingClock=gliding ? 3.7*11.8 : elapsed*11.8+o.seed*2.3;
+            const fr=((Math.floor(wingClock)%24)+24)%24;
             const fw=440,fh=320;
-            ctx.rotate(Math.sin(elapsed*1.7+o.seed)*.018);
+            const lift=Math.sin(elapsed*2.1+o.seed*1.7)*2.0;
+            ctx.translate(Math.sin(elapsed*.85+o.seed)*1.7,lift);
+            ctx.rotate(Math.sin(elapsed*1.35+o.seed)*.032);
+            const wingScale=1+Math.sin(elapsed*2.0+o.seed)*.018;
+            ctx.scale(wingScale,1/wingScale);
             ctx.drawImage(gullFrames,fr*fw,0,fw,fh,-o.w*.76,-o.h*.98,o.w*1.52,o.h*1.96);
           }
         }else if(o.kind==='storm'){
@@ -1909,13 +1918,16 @@ function createFlight(seed,heartEnabled){
     // Fine engine vibration + slower turbulence.
     var engineX=Math.sin(elapsed*(34+speedAnim*8))*(0.45+speedAnim*.18);
     var engineY=Math.cos(elapsed*(29+speedAnim*7))*(0.30+speedAnim*.12);
-    var airBob=Math.sin(elapsed*2.65)*2.35 + Math.sin(elapsed*.93+1.2)*1.15;
-    var airSway=Math.sin(elapsed*1.55)*1.15;
+    // R61: layered air currents; small independent motions, no changes to physics.
+    var airBob=Math.sin(elapsed*2.65)*2.35 + Math.sin(elapsed*.93+1.2)*1.15
+      +Math.sin(elapsed*.48+.7)*1.05;
+    var airSway=Math.sin(elapsed*1.55)*1.15 + Math.sin(elapsed*.64+.3)*.65;
 
     // Smooth nose-up / nose-down reaction to vertical velocity.
     var targetPitch=Math.max(-.22,Math.min(.22,plane.v/530));
     var wineSway=flight?(flight.state.tipsy||0):0;
-    var pitch=targetPitch + Math.sin(elapsed*1.85)*.015 + wineSway*Math.sin(elapsed*3.6)*.24;
+    var pitch=targetPitch + Math.sin(elapsed*1.85)*.015
+      + Math.sin(elapsed*.72+.5)*.009 + wineSway*Math.sin(elapsed*3.6)*.24;
 
     // Tiny breathing zoom gives the impression of a camera following the aircraft.
     var planeScale=(phoneLayout.matches?.68:.85)*(1 + Math.sin(elapsed*2.15)*.008);
@@ -1923,6 +1935,8 @@ function createFlight(seed,heartEnabled){
     ctx.translate(plane.x+engineX+airSway,plane.y+engineY+airBob);
     ctx.rotate(pitch);
     ctx.scale(planeScale,planeScale);
+    // Gentle wing-rock creates a sense of lift without moving the hitbox.
+    ctx.transform(1,Math.sin(elapsed*1.24)*.006,Math.sin(elapsed*1.66+.4)*.009,1,0,0);
 
     // Animated exhaust / airflow trail. It becomes slightly stronger at higher speed.
     ctx.save();
