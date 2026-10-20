@@ -11,7 +11,7 @@
   <div class="bf-game">
     <canvas id="bf-canvas" aria-label="Игра BSHUSHU Flight Club"></canvas>
     <div class="bf-top">
-      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R65 — THUNDERSTORM</small></div>
+      <div><b>BSHUSHU</b><small>FLIGHT CLUB · CINEMATIC R66 — LIVING AIRCRAFT</small></div>
       <div class="bf-score"><small>ДИСТАНЦИЯ</small><strong id="bf-km">0</strong> км<small id="bf-miles">✦ 0 миль</small><small id="bf-combo">Вкусная серия: 0/3</small><small id="bf-lives">♥ ♥ ♥</small></div>
     </div>
     <button id="bf-sound" class="bf-sound" type="button" aria-label="Включить звук" aria-pressed="false">Звук: выкл.</button>
@@ -1413,6 +1413,7 @@ function createFlight(seed,heartEnabled){
     $('bf-share').classList.add('hidden');
     storyBags=[[],[],[],[]];lastStory=[-1,-1,-1,-1];countryMenuShown=[false,false,false,false];
     plane=flight.state.plane;items=flight.state.items;lightnings=[];
+    draw.visualPitch=NaN;
     overlay.classList.add('hidden');$('bf-register').classList.add('hidden');
     $('bf-status').textContent='';$('bf-result').classList.add('hidden');$('bf-retry').classList.add('hidden');
     hud();if(tutorialActive){$('bf-story').classList.remove('show');$('bf-toast').classList.remove('show');nextStory=100000;hideStory=0;tutorialHud()}else showStory();if(!tutorialActive)toast(run?'✈ Зачётный полёт':'✈ Тренировка · 3 жизни · редкое ❤️');rafId=requestAnimationFrame(frame);if(document.hidden)pauseFlight();
@@ -1925,15 +1926,22 @@ function createFlight(seed,heartEnabled){
     var engineX=Math.sin(elapsed*(34+speedAnim*8))*(0.45+speedAnim*.18);
     var engineY=Math.cos(elapsed*(29+speedAnim*7))*(0.30+speedAnim*.12);
     // R61: layered air currents; small independent motions, no changes to physics.
-    var airBob=Math.sin(elapsed*2.65)*2.35 + Math.sin(elapsed*.93+1.2)*1.15
-      +Math.sin(elapsed*.48+.7)*1.05;
+    var airBob=Math.sin(elapsed*2.65)*1.55 + Math.sin(elapsed*.93+1.2)*1.25
+      +Math.sin(elapsed*.48+.7)*.75;
+    // Lift adds a restrained visual response when the player climbs.
+    airBob+=Math.max(-1.5,Math.min(1.5,-plane.v/115));
     var airSway=Math.sin(elapsed*1.55)*1.15 + Math.sin(elapsed*.64+.3)*.65;
 
     // Smooth nose-up / nose-down reaction to vertical velocity.
     var targetPitch=Math.max(-.22,Math.min(.22,plane.v/530));
     var wineSway=flight?(flight.state.tipsy||0):0;
-    var pitch=targetPitch + Math.sin(elapsed*1.85)*.015
-      + Math.sin(elapsed*.72+.5)*.009 + wineSway*Math.sin(elapsed*3.6)*.24;
+    // R66: inertial nose response: the aircraft banks into a climb or descent
+    // instead of snapping instantly to the current velocity.
+    var desiredPitch=targetPitch + Math.sin(elapsed*1.85)*.012
+      + Math.sin(elapsed*.72+.5)*.008 + wineSway*Math.sin(elapsed*3.6)*.24;
+    if(!Number.isFinite(draw.visualPitch))draw.visualPitch=desiredPitch;
+    draw.visualPitch+=(desiredPitch-draw.visualPitch)*.105;
+    var pitch=draw.visualPitch;
 
     // Tiny breathing zoom gives the impression of a camera following the aircraft.
     var planeScale=(phoneLayout.matches?.68:.85)*(1 + Math.sin(elapsed*2.15)*.008);
@@ -1943,7 +1951,24 @@ function createFlight(seed,heartEnabled){
     ctx.scale(planeScale,planeScale);
     // Gentle wing-rock creates a sense of lift without moving the hitbox.
     ctx.transform(1,Math.sin(elapsed*1.24)*.006,Math.sin(elapsed*1.66+.4)*.009,1,0,0);
+    // Gentle breathing of the airframe: the hitbox stays at plane.x / plane.y.
+    ctx.translate(0,Math.sin(elapsed*3.2)*.45);
 
+    // R66: soft layered slipstream follows the aircraft pitch and speed.
+    ctx.save();
+    var slip=1+Math.min(.6,Math.abs(plane.v)/350);
+    for(var st=0;st<3;st++){
+      var drift=(elapsed*(43+speedAnim*13)+st*37)%126;
+      var alpha=(1-drift/126)*(.12-st*.023);
+      ctx.globalAlpha=alpha;
+      ctx.strokeStyle='#fff8e6';ctx.lineWidth=1.2-st*.18;
+      ctx.beginPath();
+      ctx.moveTo(-115-drift,-13+st*13);
+      ctx.quadraticCurveTo(-134-drift,-15+st*13+Math.sin(elapsed*3+st)*2,
+        -155-drift*slip,-13+st*13+Math.sin(elapsed*2.1+st)*3);
+      ctx.stroke();
+    }
+    ctx.restore();
     // Animated exhaust / airflow trail. It becomes slightly stronger at higher speed.
     ctx.save();
     for(var ex=0;ex<4;ex++){
