@@ -1880,15 +1880,23 @@ function createFlight(seed,heartEnabled){
             // Changes are visual only: obstacle position and collision stay intact.
             // R62: compact silhouette, smooth uninterrupted wingbeats.
             // Visual size only; obstacle collision and scoring remain unchanged.
-            const wingPhase=elapsed*8.6+o.seed*1.7;
-            const fr=((Math.floor(wingPhase)%24)+24)%24;
+            // R68: friendly, slightly cartoon-like flight with rhythmic wingbeats,
+            // a brief glide and gentle banking. Render only; collision unchanged.
+            const cycle=(elapsed*1.55+o.seed*.37)%4.8;
+            const flapping=cycle<3.65;
+            const phase=elapsed*11.5+o.seed*2.1;
+            const fr=flapping?((Math.floor(phase)%24)+24)%24:5;
             const fw=440,fh=320;
-            ctx.translate(Math.sin(elapsed*.9+o.seed)*.7,Math.sin(elapsed*1.3+o.seed)*.8);
-            ctx.rotate(Math.sin(elapsed*.85+o.seed)*.015);
-            const birdScale=.43;
+            ctx.translate(Math.sin(elapsed*.95+o.seed)*1.2,Math.sin(elapsed*2.05+o.seed)*1.7);
+            ctx.rotate(Math.sin(elapsed*.85+o.seed)*.033);
+            const birdScale=.46;
+            ctx.shadowColor='rgba(35,65,76,.17)';
+            ctx.shadowBlur=3;
+            ctx.shadowOffsetY=1;
             ctx.drawImage(gullFrames,fr*fw,0,fw,fh,
               -o.w*.76*birdScale,-o.h*.98*birdScale,
               o.w*1.52*birdScale,o.h*1.96*birdScale);
+            ctx.shadowBlur=0;ctx.shadowOffsetY=0;
           }
         }else if(o.kind==='storm'){
           // R65: layered thunderhead with a timed, internal electrical charge.
